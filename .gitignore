@@ -1,0 +1,6 @@
+.env
+.venv/
+fit_files/*.fit
+__pycache__/
+*.pyc
+.idea/
