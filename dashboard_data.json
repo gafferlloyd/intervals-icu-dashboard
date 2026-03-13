@@ -1,12 +1,12 @@
 {
-  "generated": "2026-03-13 19:52",
+  "generated": "2026-03-13 23:31",
   "summary": {
-    "total_sessions": 1661,
+    "total_sessions": 1663,
     "cycling_sessions": 986,
-    "running_sessions": 673,
-    "current_ctl": 83.7,
-    "current_atl": 76.3,
-    "current_tsb": 7.4,
+    "running_sessions": 675,
+    "current_ctl": 85.2,
+    "current_atl": 84.9,
+    "current_tsb": 0.3,
     "date_range": {
       "from": "2024-01-03",
       "to": "2026-03-13"
@@ -16618,10 +16618,30 @@
       "tss": 56.7,
       "rtss": null,
       "stss": 56.7,
-      "ctl": 83.7,
-      "atl": 76.3,
-      "tsb": 7.4,
+      "ctl": 85.2,
+      "atl": 84.9,
+      "tsb": 0.3,
       "type": "indoor_cycling"
+    },
+    {
+      "date": "2026-03-13",
+      "tss": null,
+      "rtss": 35.4,
+      "stss": 35.4,
+      "ctl": 85.2,
+      "atl": 84.9,
+      "tsb": 0.3,
+      "type": "running"
+    },
+    {
+      "date": "2026-03-13",
+      "tss": null,
+      "rtss": 29.6,
+      "stss": 29.6,
+      "ctl": 85.2,
+      "atl": 84.9,
+      "tsb": 0.3,
+      "type": "running"
     }
   ],
   "cei_series": [
@@ -18733,6 +18753,56 @@
   "recent_sessions": [
     {
       "date": "2026-03-13",
+      "type": "running",
+      "is_indoor": false,
+      "duration": "46m 11s",
+      "distance_km": 7.18,
+      "elevation_m": 8,
+      "avg_hr": 110,
+      "max_hr": 122,
+      "avg_hrr_pct": 51.5,
+      "avg_cadence": 84,
+      "avg_power_w": null,
+      "norm_power_w": null,
+      "tss": null,
+      "if": null,
+      "avg_speed_kph": 9.3,
+      "avg_pace": "6:26 /km",
+      "hr_zones": {
+        "Z1 Recovery": 90.0,
+        "Z2 Endurance": 10.0,
+        "Z3 Tempo": 0.0,
+        "Z4 Threshold": 0.0,
+        "Z5 VO2max": 0.0
+      }
+    },
+    {
+      "date": "2026-03-13",
+      "type": "running",
+      "is_indoor": false,
+      "duration": "40m 12s",
+      "distance_km": 7.26,
+      "elevation_m": 9,
+      "avg_hr": 119,
+      "max_hr": 129,
+      "avg_hrr_pct": 58.5,
+      "avg_cadence": 85,
+      "avg_power_w": null,
+      "norm_power_w": null,
+      "tss": null,
+      "if": null,
+      "avg_speed_kph": 10.9,
+      "avg_pace": "5:31 /km",
+      "hr_zones": {
+        "Z1 Recovery": 15.2,
+        "Z2 Endurance": 84.8,
+        "Z3 Tempo": 0.0,
+        "Z4 Threshold": 0.0,
+        "Z5 VO2max": 0.0
+      }
+    },
+    {
+      "date": "2026-03-13",
       "type": "indoor_cycling",
       "is_indoor": true,
       "duration": "33m 27s",
@@ -18926,56 +18996,6 @@
       "hr_zones": {
         "Z1 Recovery": 50.2,
         "Z2 Endurance": 49.8,
-        "Z3 Tempo": 0.0,
-        "Z4 Threshold": 0.0,
-        "Z5 VO2max": 0.0
-      }
-    },
-    {
-      "date": "2026-03-10",
-      "type": "running",
-      "is_indoor": false,
-      "duration": "39m 21s",
-      "distance_km": 7.27,
-      "elevation_m": 12,
-      "avg_hr": 121,
-      "max_hr": 150,
-      "avg_hrr_pct": 60.0,
-      "avg_cadence": 84,
-      "avg_power_w": null,
-      "norm_power_w": null,
-      "tss": null,
-      "if": null,
-      "avg_speed_kph": 11.1,
-      "avg_pace": "5:23 /km",
-      "hr_zones": {
-        "Z1 Recovery": 29.5,
-        "Z2 Endurance": 52.0,
-        "Z3 Tempo": 18.2,
-        "Z4 Threshold": 0.3,
-        "Z5 VO2max": 0.0
-      }
-    },
-    {
-      "date": "2026-03-10",
-      "type": "cycling",
-      "is_indoor": false,
-      "duration": "1h 43m 40s",
-      "distance_km": 4.8,
-      "elevation_m": 16,
-      "avg_hr": 72,
-      "max_hr": 100,
-      "avg_hrr_pct": 22.3,
-      "avg_cadence": null,
-      "avg_power_w": null,
-      "norm_power_w": null,
-      "tss": null,
-      "if": null,
-      "avg_speed_kph": 11.8,
-      "avg_pace": null,
-      "hr_zones": {
-        "Z1 Recovery": 100.0,
-        "Z2 Endurance": 0.0,
         "Z3 Tempo": 0.0,
         "Z4 Threshold": 0.0,
         "Z5 VO2max": 0.0
