@@ -26,6 +26,10 @@ from pathlib import Path
 import json
 import math
 
+# ── Running threshold config ──────────────────────────────────────────────────
+THRESHOLD_PACE_MPS = 1000 / (4 * 60)   # 4:00/km = 4.1667 m/s
+THRESHOLD_HR       = 156                # bpm — from cross-country race data
+
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -161,23 +165,59 @@ def training_load_summary(sessions: list[dict]) -> list[dict]:
     result = []
 
     for s in sessions:
-        tss = s.get("tss")          # cycling with power
-        # rTSS stub — extend here once running threshold pace is set
-        # rtss = running_tss(s) if not s.get("is_indoor") else None
+        tss  = s.get("tss")          # cycling with power
+        rtss = running_tss(s)        # running — derived from threshold pace
 
-        if tss is not None:
-            atl = atl * ATL_DECAY + tss * (1 - ATL_DECAY)
-            ctl = ctl * CTL_DECAY + tss * (1 - CTL_DECAY)
+        # Combined session stress — use whichever is available
+        session_tss = tss if tss is not None else rtss
+
+        if session_tss is not None:
+            atl = atl * ATL_DECAY + session_tss * (1 - ATL_DECAY)
+            ctl = ctl * CTL_DECAY + session_tss * (1 - CTL_DECAY)
 
         result.append({
-            "file" : s.get("file"),
-            "tss"  : tss,
-            "atl"  : round(atl, 1),
-            "ctl"  : round(ctl, 1),
-            "tsb"  : round(ctl - atl, 1),
+            "file"  : s.get("file"),
+            "tss"   : tss,
+            "rtss"  : rtss,
+            "stss"  : session_tss,   # combined stress score
+            "atl"   : round(atl, 1),
+            "ctl"   : round(ctl, 1),
+            "tsb"   : round(ctl - atl, 1),
         })
 
     return result
+
+
+# ── Analysis 4: Running TSS ──────────────────────────────────────────────────
+
+def running_tss(session: dict) -> float | None:
+    """
+    Calculate rTSS for a running session.
+
+    rTSS = (duration_s × IF²) / 3600 × 100
+    IF   = avg_speed_mps / threshold_pace_mps
+
+    Only calculated for outdoor running sessions with valid speed data.
+    Returns None if data is insufficient.
+    """
+    if "run" not in session.get("activity_type", ""):
+        return None
+
+    duration_s = session.get("duration_s", 0)
+    if duration_s < 300:   # ignore < 5 min
+        return None
+
+    # Derive avg speed from pace string or avg_speed_kph
+    avg_spd_kph = session.get("avg_speed_kph")
+    if not avg_spd_kph or avg_spd_kph <= 0:
+        return None
+
+    avg_spd_mps = avg_spd_kph / 3.6
+    IF          = avg_spd_mps / THRESHOLD_PACE_MPS
+    rtss        = (duration_s * IF * IF) / 3600 * 100
+
+    # Sanity cap — rTSS > 400 in a single session is implausible
+    return round(min(rtss, 400), 1)
 
 
 # ── CLI convenience ───────────────────────────────────────────────────────────

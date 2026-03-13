@@ -19,6 +19,7 @@ from analysis import (
     cardiac_efficiency_index,
     training_load_summary,
     indoor_outdoor_delta,
+    running_tss,
 )
 
 FIT_DIR    = Path("fit_files")
@@ -48,6 +49,8 @@ def build_dashboard_data() -> dict:
         pmc_chart.append({
             "date"  : date,
             "tss"   : pmc["tss"],
+            "rtss"  : pmc["rtss"],
+            "stss"  : pmc["stss"],
             "ctl"   : pmc["ctl"],
             "atl"   : pmc["atl"],
             "tsb"   : pmc["tsb"],
