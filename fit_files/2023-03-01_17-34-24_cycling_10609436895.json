@@ -1,0 +1,29 @@
+{
+  "file": "2023-03-01_17-34-24_cycling_10609436895.fit",
+  "activity_type": "cycling",
+  "is_indoor": false,
+  "duration": "1h 14m 58s",
+  "duration_s": 4499,
+  "distance_km": 8.68,
+  "elevation_m": 76,
+  "calories_kcal": 226,
+  "heart_rate": {
+    "avg_bpm": 99,
+    "max_bpm": 117,
+    "min_bpm": 71,
+    "avg_hrr_pct": 43.1
+  },
+  "hr_zones_pct": {
+    "Z1 Recovery": 96.6,
+    "Z2 Endurance": 3.4,
+    "Z3 Tempo": 0.0,
+    "Z4 Threshold": 0.0,
+    "Z5 VO2max": 0.0
+  },
+  "cadence": {
+    "avg_rpm": null,
+    "max_rpm": null
+  },
+  "avg_speed_kph": 16.4,
+  "max_speed_kph": 26.5
+}

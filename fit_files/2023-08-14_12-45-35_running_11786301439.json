@@ -1,0 +1,35 @@
+{
+  "file": "2023-08-14_12-45-35_running_11786301439.fit",
+  "activity_type": "running",
+  "is_indoor": false,
+  "duration": "34m 50s",
+  "duration_s": 2091,
+  "distance_km": 7.32,
+  "elevation_m": 153,
+  "calories_kcal": 502,
+  "heart_rate": {
+    "avg_bpm": 140,
+    "max_bpm": 157,
+    "min_bpm": 74,
+    "avg_hrr_pct": 74.6
+  },
+  "hr_zones_pct": {
+    "Z1 Recovery": 3.3,
+    "Z2 Endurance": 22.9,
+    "Z3 Tempo": 62.6,
+    "Z4 Threshold": 11.2,
+    "Z5 VO2max": 0.0
+  },
+  "cadence": {
+    "avg_rpm": 88,
+    "max_rpm": 91
+  },
+  "avg_pace": "4:46 /km",
+  "max_pace": "4:06 /km",
+  "avg_speed_kph": 12.6,
+  "running_biomechanics": {
+    "avg_vertical_osc_mm": 81.3,
+    "avg_stance_time_ms": 186.7,
+    "avg_step_length_mm": 1199
+  }
+}

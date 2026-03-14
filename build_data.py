@@ -112,16 +112,40 @@ def build_dashboard_data() -> dict:
     cycling_sess = [s for s in sessions if "cycl" in s.get("activity_type","") or "bik" in s.get("activity_type","")]
     running_sess = [s for s in sessions if "run"  in s.get("activity_type","")]
 
+    # ── Calorie stats by year ──────────────────────────────────────────────────
+    from collections import defaultdict
+    cal_by_year = defaultdict(float)
+    for s in sessions:
+        kcal = s.get("calories_kcal")
+        if kcal:
+            year = s.get("file", "")[:4]
+            cal_by_year[year] += kcal
+
+    # Annualised from last 42 days
+    recent_kcal = sum(
+        s.get("calories_kcal", 0) or 0
+        for s in sessions
+        if s.get("file", "")[:10] >= (
+            __import__("datetime").datetime.now() -
+            __import__("datetime").timedelta(days=42)
+        ).strftime("%Y-%m-%d")
+    )
+    annualised_kcal = round(recent_kcal / 42 * 365)
+
     summary = {
-        "total_sessions"  : len(sessions),
-        "cycling_sessions": len(cycling_sess),
-        "running_sessions": len(running_sess),
-        "current_ctl"     : latest_pmc.get("ctl"),
-        "current_atl"     : latest_pmc.get("atl"),
-        "current_tsb"     : latest_pmc.get("tsb"),
-        "date_range"      : {
+        "total_sessions"   : len(sessions),
+        "cycling_sessions" : len(cycling_sess),
+        "running_sessions" : len(running_sess),
+        "current_ctl"      : latest_pmc.get("ctl"),
+        "current_atl"      : latest_pmc.get("atl"),
+        "current_tsb"      : latest_pmc.get("tsb"),
+        "date_range"       : {
             "from": date_from_filename(sessions[0].get("file", "")),
             "to"  : date_from_filename(sessions[-1].get("file", "")),
+        },
+        "calories"         : {
+            "by_year"         : {k: round(v) for k, v in sorted(cal_by_year.items())},
+            "annualised_42d"  : annualised_kcal,
         },
     }
 

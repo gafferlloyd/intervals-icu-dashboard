@@ -24,28 +24,18 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install garminconnect python-dotenv fitparse
+        run: pip install garminconnect python-dotenv fitparse numpy
 
       - name: Download and parse new activities
         env:
           GARMIN_EMAIL:    ${{ secrets.GARMIN_EMAIL }}
           GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
-        run: python garmin_download.py
+        run: python3 garmin_download.py
 
-      - name: Build running cloud (incremental)
-        run: python build_running_cloud.py
-
-      - name: Build cycling cloud (incremental)
-        run: python build_cycling_cloud.py
-
-      - name: Build cycling power curve (incremental)
-        run: python build_cycling_curve.py
-
-      - name: Build running bests (incremental)
-        run: python build_running_bests.py
-
-      - name: Build dashboard data
-        run: python build_data.py
+      - name: Rebuild all data
+        run: |
+          chmod +x rebuild_all.sh
+          ./rebuild_all.sh
 
       - name: Commit and push if data changed
         run: |

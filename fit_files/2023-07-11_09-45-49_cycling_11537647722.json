@@ -1,0 +1,30 @@
+{
+  "file": "2023-07-11_09-45-49_cycling_11537647722.fit",
+  "activity_type": "gravel_cycling",
+  "is_indoor": false,
+  "duration": "7h 35m 00s",
+  "duration_s": 27300,
+  "distance_km": 90.59,
+  "elevation_m": 1049,
+  "calories_kcal": 2074,
+  "heart_rate": {
+    "avg_bpm": 97,
+    "max_bpm": 151,
+    "min_bpm": 55,
+    "avg_hrr_pct": 41.5
+  },
+  "hr_zones_pct": {
+    "Z1 Recovery": 85.4,
+    "Z2 Endurance": 13.8,
+    "Z3 Tempo": 0.8,
+    "Z4 Threshold": 0.0,
+    "Z5 VO2max": 0.0
+  },
+  "cadence": {
+    "avg_rpm": null,
+    "max_rpm": null
+  },
+  "avg_pace": "4:25 /km",
+  "max_pace": "1:24 /km",
+  "avg_speed_kph": 13.6
+}

@@ -113,6 +113,7 @@ def parse_fit(filepath: str | Path, activity_type: str) -> dict:
 
     total_distance = 0.0   # metres
     total_ascent   = 0.0   # metres
+    total_calories = 0     # kcal
     duration_s     = 0.0   # seconds (moving/elapsed from session record)
     start_time     = None
     end_time       = None
@@ -197,6 +198,8 @@ def parse_fit(filepath: str | Path, activity_type: str) -> dict:
             total_distance = data["total_distance"]
         if data.get("total_ascent"):
             total_ascent   = data["total_ascent"]
+        if data.get("total_calories"):
+            total_calories = data["total_calories"]
         # Running uses avg_running_cadence; cycling uses avg_cadence
         sess_cad = data.get("avg_running_cadence") or data.get("avg_cadence")
         sess_max_cad = data.get("max_running_cadence") or data.get("max_cadence")
@@ -281,6 +284,7 @@ def parse_fit(filepath: str | Path, activity_type: str) -> dict:
         "duration_s"    : round(duration_s),
         "distance_km"   : round(total_distance / 1000, 2),
         "elevation_m"   : round(total_ascent),
+        "calories_kcal" : total_calories if total_calories else None,
         "heart_rate"    : {
             "avg_bpm"   : avg_hr,
             "max_bpm"   : max_hr,

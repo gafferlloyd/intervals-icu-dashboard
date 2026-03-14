@@ -183,6 +183,25 @@
       </table>
     </div>
   </div>
+  <!-- Annual stats table -->
+  <div class="panel" id="p-stats">
+    <div class="panel-header"><h2>Annual Summary Statistics</h2></div>
+    <div class="panel-body" style="padding:0">
+      <table class="sessions-table" id="stats-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th id="th-2023">2023</th>
+            <th id="th-2024">2024</th>
+            <th id="th-2025">2025</th>
+            <th id="th-2026">2026</th>
+            <th>Annualised 42d</th>
+          </tr>
+        </thead>
+        <tbody id="stats-tbody"></tbody>
+      </table>
+    </div>
+  </div>
 </main>
 
 <script>
@@ -283,6 +302,51 @@ async function init() {
       <td class="num">${n(s.avg_cadence)}</td>
       <td>${zoneBars(s.hr_zones)}</td>
     </tr>`;
+  });
+
+  // Annual stats table
+  const calData = data.summary?.calories || {};
+  const byYear  = calData.by_year || {};
+  const annualised = calData.annualised_42d;
+  const years = ['2023','2024','2025','2026'];
+
+  // Count sessions and distance by year
+  const sessionsByYear = {}, distByYear = {}, tssbyYear = {};
+  years.forEach(y => { sessionsByYear[y]=0; distByYear[y]=0; tssbyYear[y]=0; });
+  (data.pmc_chart || []).forEach(r => {
+    const y = r.date?.slice(0,4);
+    if (!years.includes(y)) return;
+    sessionsByYear[y] = (sessionsByYear[y]||0) + 1;
+    if (r.stss) tssbyYear[y] = (tssbyYear[y]||0) + r.stss;
+  });
+  (data.recent_sessions || []).forEach(() => {}); // placeholder
+
+  // Build from all sessions in PMC
+  const distByYearFull = {};
+  years.forEach(y => distByYearFull[y] = 0);
+
+  const statsRows = [
+    {
+      label: 'Calories (kcal)',
+      vals: years.map(y => byYear[y] ? Math.round(byYear[y]).toLocaleString() : '—'),
+      ann: annualised ? annualised.toLocaleString() : '—',
+    },
+    {
+      label: 'Sessions',
+      vals: years.map(y => sessionsByYear[y] || '—'),
+      ann: Math.round((sessionsByYear['2026']||0) / 75 * 365) || '—',
+    },
+    {
+      label: 'Total TSS',
+      vals: years.map(y => tssbyYear[y] ? Math.round(tssbyYear[y]).toLocaleString() : '—'),
+      ann: tssbyYear['2026'] ? Math.round(tssbyYear['2026'] / 75 * 365).toLocaleString() : '—',
+    },
+  ];
+
+  const statsTbody = document.getElementById('stats-tbody');
+  statsRows.forEach(row => {
+    const cells = row.vals.map(v => `<td class="num">${v}</td>`).join('');
+    statsTbody.innerHTML += `<tr><td>${row.label}</td>${cells}<td class="num" style="color:var(--accent)">${row.ann}</td></tr>`;
   });
 
   // Reveal panels

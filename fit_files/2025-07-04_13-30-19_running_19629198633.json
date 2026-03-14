@@ -6,6 +6,7 @@
   "duration_s": 3494,
   "distance_km": 10.01,
   "elevation_m": 22,
+  "calories_kcal": 678,
   "heart_rate": {
     "avg_bpm": 114,
     "max_bpm": 125,

@@ -1,0 +1,30 @@
+{
+  "file": "2023-11-07_12-31-36_running_12634502670.fit",
+  "activity_type": "running",
+  "is_indoor": false,
+  "duration": "56m 52s",
+  "duration_s": 3413,
+  "distance_km": 11.45,
+  "elevation_m": 279,
+  "calories_kcal": 767,
+  "heart_rate": {
+    "avg_bpm": 135,
+    "max_bpm": 150,
+    "min_bpm": 73,
+    "avg_hrr_pct": 70.8
+  },
+  "hr_zones_pct": {
+    "Z1 Recovery": 3.0,
+    "Z2 Endurance": 45.5,
+    "Z3 Tempo": 51.5,
+    "Z4 Threshold": 0.0,
+    "Z5 VO2max": 0.0
+  },
+  "cadence": {
+    "avg_rpm": 87,
+    "max_rpm": 91
+  },
+  "avg_pace": "4:51 /km",
+  "max_pace": "4:17 /km",
+  "avg_speed_kph": 12.4
+}

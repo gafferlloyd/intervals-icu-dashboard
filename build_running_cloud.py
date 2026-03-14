@@ -88,51 +88,62 @@ def compute_bucket_stats(raw_buckets: dict) -> dict:
     return stats
 
 
+# HR range for regression fitting
+FIT_HR_MIN_PRIMARY  = 120.0   # bpm — primary fit lower bound
+FIT_HR_MAX_PRIMARY  = 150.0   # bpm — primary fit upper bound
+FIT_MIN_BUCKETS     = 4       # minimum buckets needed to fit
+FIT_MIN_R2          = 0.70    # minimum R² to accept fit
+
+
+def _do_fit(filtered: list) -> dict | None:
+    """Run linear regression on a filtered bucket list. Returns fit dict or None."""
+    if len(filtered) < FIT_MIN_BUCKETS:
+        return None
+    paces = np.array([b["pace_sec"] for b in filtered])
+    hrs   = np.array([b["avg_hr"]   for b in filtered])
+    coeffs = np.polyfit(paces, hrs, 1)
+    y_pred = np.polyval(coeffs, paces)
+    ss_res = np.sum((hrs - y_pred) ** 2)
+    ss_tot = np.sum((hrs - np.mean(hrs)) ** 2)
+    r2 = 1 - ss_res / ss_tot if ss_tot > 0 else 0
+    if r2 < FIT_MIN_R2:
+        return None
+    return {"coeffs": coeffs, "r2": r2, "hrs": hrs, "paces": paces}
+
+
 def fit_linear(bucket_stats: dict) -> dict | None:
     """
-    Auto-detect linear region and fit regression.
-    Excludes the slow plateau; finds best R² contiguous range.
+    Two-tier linear regression:
+      1. Primary: fit over HR 120–150 bpm (clean aerobic linear region)
+      2. Fallback: fit over all available buckets if primary has < 4 points
+    Reports actual fit HR range so caller knows which tier was used.
     Extrapolates to VT1, threshold, and all HRR% markers.
     """
-    # Sort slow → fast (high pace_sec → low)
-    sorted_b = sorted(bucket_stats.values(),
-                      key=lambda b: b["pace_sec"], reverse=True)
-    if len(sorted_b) < 6:
+    all_buckets = sorted(bucket_stats.values(),
+                         key=lambda b: b["pace_sec"], reverse=True)
+
+    # Tier 1: primary HR range
+    primary = [b for b in all_buckets
+               if FIT_HR_MIN_PRIMARY <= b["avg_hr"] <= FIT_HR_MAX_PRIMARY]
+    fit_result = _do_fit(primary)
+    fit_tier   = "primary"
+    fit_hr_min = FIT_HR_MIN_PRIMARY
+    fit_hr_max = FIT_HR_MAX_PRIMARY
+
+    # Tier 2: fallback — use all buckets
+    if fit_result is None:
+        fit_result = _do_fit(all_buckets)
+        fit_tier   = "fallback"
+        fit_hr_min = float(min(b["avg_hr"] for b in all_buckets)) if all_buckets else 0
+        fit_hr_max = float(max(b["avg_hr"] for b in all_buckets)) if all_buckets else 0
+
+    if fit_result is None:
         return None
 
-    paces = np.array([b["pace_sec"] for b in sorted_b])
-    hrs   = np.array([b["avg_hr"]   for b in sorted_b])
-
-    # Find end of plateau: first point where slope exceeds threshold
-    MIN_SLOPE = -0.08
-    plateau_end = len(paces) // 3
-    for i in range(1, len(paces) - 2):
-        slope = (hrs[i+1] - hrs[i-1]) / (paces[i+1] - paces[i-1])
-        if slope < MIN_SLOPE:
-            plateau_end = i
-            break
-
-    # Find best linear region
-    best_r2, best_start, best_end = 0.0, plateau_end, len(paces)
-    for start in range(plateau_end, len(paces) - 4):
-        for end in range(start + 4, len(paces) + 1):
-            x = paces[start:end]
-            y = hrs[start:end]
-            coeffs = np.polyfit(x, y, 1)
-            y_pred = np.polyval(coeffs, x)
-            ss_res = np.sum((y - y_pred) ** 2)
-            ss_tot = np.sum((y - np.mean(y)) ** 2)
-            r2 = 1 - ss_res / ss_tot if ss_tot > 0 else 0
-            if r2 > best_r2 and r2 > 0.85:
-                best_r2, best_start, best_end = r2, start, end
-
-    if best_r2 < 0.85:
-        return None
-
-    x_fit  = paces[best_start:best_end]
-    y_fit  = hrs[best_start:best_end]
-    coeffs = np.polyfit(x_fit, y_fit, 1)
+    coeffs   = fit_result["coeffs"]
+    best_r2  = fit_result["r2"]
     slope, intercept = coeffs
+    plateau_pace = all_buckets[0]["pace_sec"] if all_buckets else 400.0
 
     def hr_to_pace(hr_target: float) -> dict:
         pace_sec = (hr_target - intercept) / slope
@@ -140,7 +151,7 @@ def fit_linear(bucket_stats: dict) -> dict | None:
                 "pace_label": pace_label(pace_sec),
                 "hr": round(hr_target, 1)}
 
-    # HRR markers
+    # HRR markers — all percentages
     markers = {}
     for pct in HRR_MARKERS_PCT:
         bpm = hrr_to_bpm(pct)
@@ -148,21 +159,23 @@ def fit_linear(bucket_stats: dict) -> dict | None:
     markers["vt1"]       = hr_to_pace(VT1_HR)
     markers["threshold"] = hr_to_pace(THRESHOLD_HR)
 
-    # Regression line
-    x_line = np.linspace(paces[best_end-1], paces[best_start], 50)
-    y_line = np.polyval(coeffs, x_line)
+    # Regression line drawn across actual fit HR range
+    hr_line  = np.linspace(fit_hr_min, fit_hr_max, 50)
+    x_line   = (hr_line - intercept) / slope
+    y_line   = hr_line
 
     return {
         "slope"           : round(float(slope), 4),
         "intercept"       : round(float(intercept), 2),
         "r2"              : round(float(best_r2), 4),
-        "plateau_pace_sec": round(float(paces[plateau_end]), 1),
-        "fit_pace_range"  : [round(float(paces[best_end-1]), 1),
-                             round(float(paces[best_start]), 1)],
+        "plateau_pace_sec": round(float(plateau_pace), 1),
+        "fit_hr_range"    : [round(fit_hr_min, 1), round(fit_hr_max, 1)],
+        "fit_tier"        : fit_tier,
         "markers"         : markers,
         "regression_line" : [
             {"pace_sec": round(float(x), 1), "hr": round(float(y), 2)}
             for x, y in zip(x_line, y_line)
+            if PACE_MIN_SEC <= x <= PACE_MAX_SEC
         ],
     }
 

@@ -26,7 +26,12 @@ from pathlib import Path
 import fitparse
 import numpy as np
 
+from athlete_config import HR_REST, HR_MAX, HRR
+
 # ── Config ────────────────────────────────────────────────────────────────────
+COOPER_MIN_HR_PCT_HRR = 85   # % HRR — minimum peak HR to qualify Cooper effort
+COOPER_MIN_HR_BPM     = HR_REST + (COOPER_MIN_HR_PCT_HRR / 100) * HRR
+
 FIT_DIR     = Path("fit_files")
 BESTS_FILE  = Path("running_bests.json")
 RECENT_DAYS = 42
@@ -60,7 +65,7 @@ def open_fit(path: Path) -> fitparse.FitFile:
 
 def extract_distance_time_series(fit_path: Path) -> list[tuple]:
     """
-    Extract (timestamp, cumulative_distance_m, speed_mps) from a .fit file.
+    Extract (timestamp, cumulative_distance_m, speed_mps, hr_bpm) from a .fit file.
     """
     fitfile = open_fit(fit_path)
     records = []
@@ -69,8 +74,10 @@ def extract_distance_time_series(fit_path: Path) -> list[tuple]:
         ts   = data.get("timestamp")
         dist = data.get("distance")
         spd  = data.get("enhanced_speed") or data.get("speed")
+        hr   = data.get("heart_rate")
         if ts and dist is not None:
-            records.append((ts, float(dist), float(spd) if spd else 0.0))
+            records.append((ts, float(dist), float(spd) if spd else 0.0,
+                           float(hr) if hr else 0.0))
     return records
 
 
@@ -83,27 +90,27 @@ def secs_to_time(seconds: float) -> str:
     return f"{m}:{s:02d}"
 
 
-def find_best_times(records: list[tuple]) -> dict[str, dict]:
+def find_best_times(records: list[tuple]) -> tuple[dict, float]:
     """
-    Find best time for each target distance using cumulative distance data.
-    Uses a two-pointer approach on the distance series.
+    Find best time for each target distance and total distance.
+    Returns (bests_dict, total_distance_km).
     """
     if not records:
-        return {}
+        return {}, 0.0
 
     bests = {}
     n     = len(records)
     times = np.array([(r[0] - records[0][0]).total_seconds() for r in records])
     dists = np.array([r[1] for r in records])
+    total_km = round(float(dists[-1]) / 1000, 1)
 
     for label, target_m in DISTANCES.items():
         if dists[-1] < target_m:
-            continue   # ride not long enough
+            continue
 
         best_time = float('inf')
         j = 0
         for i in range(n):
-            # Advance j until distance covered >= target
             while j < n and (dists[j] - dists[i]) < target_m:
                 j += 1
             if j >= n:
@@ -121,13 +128,13 @@ def find_best_times(records: list[tuple]) -> dict[str, dict]:
                 "pace_label" : secs_to_time(pace_sec),
             }
 
-    return bests
+    return bests, total_km
 
 
 def find_cooper_distance(records: list[tuple]) -> dict | None:
     """
-    Find the maximum distance covered in any 12-minute (720s) window.
-    Returns distance and estimated VO2max.
+    Find the maximum distance covered in any 12-minute window
+    where peak HR >= COOPER_MIN_HR_BPM (effort qualification).
     Cooper formula: VO2max = (distance_m - 504.9) / 44.73
     """
     if not records:
@@ -135,11 +142,13 @@ def find_cooper_distance(records: list[tuple]) -> dict | None:
 
     times = np.array([(r[0] - records[0][0]).total_seconds() for r in records])
     dists = np.array([r[1] for r in records])
+    hrs   = np.array([r[3] for r in records])
 
     if times[-1] < COOPER_DURATION:
         return None
 
-    best_dist = 0.0
+    best_dist    = 0.0
+    best_peak_hr = 0.0
     j = 0
     n = len(records)
 
@@ -149,17 +158,23 @@ def find_cooper_distance(records: list[tuple]) -> dict | None:
         if j >= n:
             break
         covered = dists[j] - dists[i]
-        if covered > best_dist:
-            best_dist = covered
+        peak_hr = float(np.max(hrs[i:j])) if j > i else 0.0
+        # Only qualify if peak HR meets threshold
+        if covered > best_dist and peak_hr >= COOPER_MIN_HR_BPM:
+            best_dist    = covered
+            best_peak_hr = peak_hr
 
     if best_dist < 1000:
         return None
 
-    vo2max = (best_dist - 504.9) / 44.73
+    vo2max  = (best_dist - 504.9) / 44.73
+    hrr_pct = round((best_peak_hr - HR_REST) / HRR * 100, 1) if best_peak_hr > 0 else None
 
     return {
-        "distance_m" : round(best_dist),
-        "vo2max"     : round(vo2max, 1),
+        "distance_m"  : round(best_dist),
+        "vo2max"      : round(vo2max, 1),
+        "peak_hr_bpm" : round(best_peak_hr, 1),
+        "peak_hrr_pct": hrr_pct,
     }
 
 
@@ -221,22 +236,22 @@ def build_running_bests() -> None:
             processed.add(name)
             continue
 
-        best_times = find_best_times(records)
+        best_times, total_km = find_best_times(records)
         cooper     = find_cooper_distance(records)
         top_dist   = max(best_times.keys(),
                         key=lambda k: DISTANCES[k]) if best_times else "—"
-
-        print(f"  ✓ {name}  [{sk_year}]  "
-              f"best={top_dist}  "
-              f"cooper={cooper['distance_m']}m" if cooper else f"  ✓ {name}")
+        cooper_str = f"cooper={cooper['distance_m']}m" if cooper else "no cooper"
+        print(f"  ✓ {name}  [{sk_year}]  best={top_dist}  {cooper_str}")
 
         for sk in [sk_year] + (["recent"] if is_recent else []):
             if sk not in series:
-                series[sk] = {"best_times": {}, "cooper": None}
+                series[sk] = {"best_times": {}, "cooper": None, "total_distance_km": 0.0}
             series[sk]["best_times"] = merge_bests(
                 series[sk].get("best_times", {}), best_times)
             series[sk]["cooper"] = merge_cooper(
                 series[sk].get("cooper"), cooper)
+            series[sk]["total_distance_km"] = round(
+                series[sk].get("total_distance_km", 0.0) + total_km, 1)
 
         processed.add(name)
 

@@ -9,112 +9,76 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg:       #0a0c0f;
-    --surface:  #111418;
-    --border:   #1e2329;
-    --muted:    #3a4149;
-    --text:     #c8d0d8;
-    --dim:      #6b7580;
-    --accent:   #e8f020;
-    --i2024:    #60a5fa;
-    --o2024:    #93c5fd;
-    --i2025:    #34d399;
-    --o2025:    #6ee7b7;
-    --i2026:    #f59e0b;
-    --o2026:    #fcd34d;
-    --recent:   #f87171;
-    --font-mono:'DM Mono', monospace;
-    --font-head:'Barlow Condensed', sans-serif;
+    --bg:#0a0c0f; --surface:#111418; --border:#1e2329; --muted:#3a4149;
+    --text:#c8d0d8; --dim:#6b7580; --accent:#e8f020;
+    --i24:#60a5fa; --o24:#93c5fd; --i25:#34d399; --o25:#6ee7b7;
+    --i26:#f59e0b; --o26:#fcd34d; --rec:#f87171;
+    --font-mono:'DM Mono',monospace; --font-head:'Barlow Condensed',sans-serif;
   }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--font-mono); font-size: 13px; line-height: 1.5; min-height: 100vh; }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-mono);font-size:13px;line-height:1.5;min-height:100vh;}
+  nav{border-bottom:1px solid var(--border);padding:12px 32px;display:flex;gap:24px;align-items:center;}
+  nav a{color:var(--dim);text-decoration:none;font-family:var(--font-head);font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;transition:color .2s;}
+  nav a:hover,nav a.active{color:var(--accent);}
+  nav .sep{color:var(--muted);}
+  header{border-bottom:1px solid var(--border);padding:20px 32px;display:flex;align-items:baseline;gap:16px;}
+  header h1{font-family:var(--font-head);font-size:28px;font-weight:700;letter-spacing:.04em;color:#fff;text-transform:uppercase;}
+  header h1 span{color:var(--accent);}
+  header .sub{color:var(--dim);font-size:11px;margin-left:auto;}
+  main{padding:24px 32px;display:grid;gap:24px;}
+  .panel{background:var(--surface);border:1px solid var(--border);opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease;}
+  .panel.visible{opacity:1;transform:none;}
+  .panel-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .panel-header h2{font-family:var(--font-head);font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;}
+  .panel-body{padding:20px;}
+  .chart-wrap{position:relative;height:500px;}
+  .chart-wrap-tall{position:relative;height:460px;}
+  .pill{font-size:10px;padding:2px 7px;border-radius:2px;font-weight:600;letter-spacing:.05em;font-family:var(--font-head);}
+  .stoggle{background:var(--surface);border:1px solid var(--border);color:var(--dim);padding:4px 10px;border-radius:2px;font-family:var(--font-head);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s;margin-bottom:12px;}
+  .stoggle.active{opacity:1;} .stoggle:not(.active){opacity:0.35;}
 
-  nav { border-bottom: 1px solid var(--border); padding: 12px 32px; display: flex; gap: 24px; align-items: center; }
-  nav a { color: var(--dim); text-decoration: none; font-family: var(--font-head); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
-  nav a:hover, nav a.active { color: var(--accent); }
-  nav .sep { color: var(--muted); }
+  /* Gradient table */
+  .grad-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .grad-table th{font-family:var(--font-head);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);text-align:right;padding:8px 12px;border-bottom:1px solid var(--border);}
+  .grad-table th:first-child{text-align:left;}
+  .grad-table td{padding:8px 12px;border-bottom:1px solid var(--border);text-align:right;font-variant-numeric:tabular-nums;}
+  .grad-table td:first-child{text-align:left;color:var(--dim);}
+  .grad-table tr:last-child td{border-bottom:none;}
+  .grad-table tr:hover td{background:rgba(255,255,255,.02);}
+  .grad-table .series-header td{background:rgba(255,255,255,.03);font-family:var(--font-head);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
 
-  header { border-bottom: 1px solid var(--border); padding: 20px 32px; display: flex; align-items: baseline; gap: 16px; }
-  header h1 { font-family: var(--font-head); font-size: 28px; font-weight: 700; letter-spacing: 0.04em; color: #fff; text-transform: uppercase; }
-  header h1 span { color: var(--accent); }
-  header .sub { color: var(--dim); font-size: 11px; margin-left: auto; }
-
-  main { padding: 24px 32px; display: grid; gap: 24px; }
-
-  .panel { background: var(--surface); border: 1px solid var(--border); opacity: 0; transform: translateY(8px); transition: opacity 0.4s ease, transform 0.4s ease; }
-  .panel.visible { opacity: 1; transform: none; }
-  .panel-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .panel-header h2 { font-family: var(--font-head); font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
-  .panel-body { padding: 20px; }
-  .chart-wrap { position: relative; height: 380px; }
-  .chart-wrap-tall { position: relative; height: 440px; }
-
-  .pill { font-size: 10px; padding: 2px 7px; border-radius: 2px; font-weight: 600; letter-spacing: 0.05em; font-family: var(--font-head); }
-
-  /* Series toggle buttons */
-  .series-toggles { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
-  .stoggle { background: var(--surface); border: 1px solid var(--border); color: var(--dim); padding: 4px 10px; border-radius: 2px; font-family: var(--font-head); font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
-  .stoggle.active { color: #fff; }
-  .stoggle:hover { border-color: var(--muted); }
-
-  /* Gradient grid */
-  .gradient-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); }
-  .grad-card { background: var(--surface); padding: 14px 16px; }
-  .grad-card .label { font-family: var(--font-head); font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
-  .grad-card .value { font-family: var(--font-head); font-size: 24px; font-weight: 700; line-height: 1; }
-  .grad-card .sub { color: var(--dim); font-size: 11px; margin-top: 3px; }
-  .grad-card .markers { margin-top: 8px; display: grid; gap: 2px; font-size: 11px; }
-  .grad-card .marker-row { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px solid var(--border); }
-  .grad-card .marker-row:last-child { border-bottom: none; }
-  .grad-card .mk { color: var(--dim); }
-  .grad-card .mv { color: var(--text); font-variant-numeric: tabular-nums; }
-
-  /* Delta panel */
-  .delta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--border); }
-  .delta-cell { background: var(--surface); padding: 16px 20px; }
-  .delta-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
-  .delta-row:last-child { border-bottom: none; }
-  .delta-row .dk { color: var(--dim); }
-  .delta-row .dv { color: var(--text); font-variant-numeric: tabular-nums; }
-
-  /* two col */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-
-  #loading { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); z-index: 100; }
-  #loading.hidden { display: none; }
+  /* CEI chart */
+  .null{color:var(--muted);}
+  #loading{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);z-index:100;}
+  #loading.hidden{display:none;}
 </style>
 </head>
 <body>
 <div id="loading">Loading cycling analysis…</div>
-
 <nav>
-  <a href="index.html">📊 Summary</a>
-  <span class="sep">·</span>
-  <a href="running_analysis.html">🏃 Running</a>
-  <span class="sep">·</span>
+  <a href="index.html">📊 Summary</a><span class="sep">·</span>
+  <a href="running_analysis.html">🏃 Running</a><span class="sep">·</span>
   <a href="cycling_analysis.html" class="active">🚲 Cycling</a>
 </nav>
-
 <header>
   <h1>Cycling <span>Analysis</span></h1>
   <div class="sub" id="last-updated"></div>
 </header>
-
 <main>
   <!-- Power/HR Cloud -->
   <div class="panel" id="p-cloud">
     <div class="panel-header"><h2>Power / Heart Rate Characteristic</h2></div>
     <div class="panel-body">
-      <div class="series-toggles" id="cloud-toggles"></div>
+      <div id="cloud-toggles" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;"></div>
       <div class="chart-wrap"><canvas id="chart-cloud"></canvas></div>
     </div>
   </div>
 
-  <!-- Gradient summary -->
+  <!-- Gradient table -->
   <div class="panel" id="p-grad">
     <div class="panel-header"><h2>Regression Summary — W/bpm &amp; Key Power Values</h2></div>
     <div class="panel-body" style="padding:0">
-      <div class="gradient-grid" id="gradient-grid"></div>
+      <table class="grad-table" id="grad-table"></table>
     </div>
   </div>
 
@@ -122,467 +86,376 @@
   <div class="panel" id="p-curve">
     <div class="panel-header">
       <h2>Mean Maximal Power Curve</h2>
-      <span class="pill" style="background:#1a1a0a;color:var(--accent)">MMP</span>
+      <span class="pill" style="background:#1a1a0a;color:var(--accent)">MMP — W/kg</span>
       <span class="pill" style="background:#0a1a0a;color:#34d399">NP 5min+</span>
     </div>
     <div class="panel-body">
-      <div class="series-toggles" id="curve-toggles"></div>
+      <div id="curve-toggles" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;"></div>
       <div class="chart-wrap-tall"><canvas id="chart-curve"></canvas></div>
     </div>
   </div>
 
-  <div class="two-col">
-    <!-- CEI Chart -->
-    <div class="panel" id="p-cei">
-      <div class="panel-header">
-        <h2>Cardiac Efficiency Index</h2>
-        <span class="pill" style="background:#0f1f35;color:var(--i2025)">W / bpm — higher is better</span>
-      </div>
-      <div class="panel-body">
-        <div class="chart-wrap"><canvas id="chart-cei"></canvas></div>
-      </div>
+  <!-- CEI -->
+  <div class="panel" id="p-cei">
+    <div class="panel-header">
+      <h2>Cardiac Efficiency Index</h2>
+      <span class="pill" style="background:#0f1f35;color:#6ee7b7">W/bpm — higher is better · indoor 🏠 outdoor 🌳</span>
     </div>
-
-    <!-- Indoor/outdoor delta -->
-    <div class="panel" id="p-delta">
-      <div class="panel-header"><h2>Indoor / Outdoor Delta</h2></div>
-      <div class="panel-body" style="padding:0">
-        <div class="delta-grid" id="delta-grid"></div>
-      </div>
-    </div>
+    <div class="panel-body"><div class="chart-wrap"><canvas id="chart-cei"></canvas></div></div>
   </div>
 </main>
 
 <script>
-const SERIES_META = {
-  indoor_2024:  { label: 'Indoor 2024',  color: '#60a5fa', dash: [4,2] },
-  outdoor_2024: { label: 'Outdoor 2024', color: '#93c5fd', dash: [] },
-  indoor_2025:  { label: 'Indoor 2025',  color: '#34d399', dash: [4,2] },
-  outdoor_2025: { label: 'Outdoor 2025', color: '#6ee7b7', dash: [] },
-  indoor_2026:  { label: 'Indoor 2026',  color: '#f59e0b', dash: [4,2] },
-  outdoor_2026: { label: 'Outdoor 2026', color: '#fcd34d', dash: [] },
-  recent:       { label: 'Recent 42d',   color: '#f87171', dash: [2,3] },
+const WEIGHT = 68;
+const SM = {
+  indoor_2024:  {label:'Indoor 2024',  col:'#60a5fa', dash:[4,2]},
+  outdoor_2024: {label:'Outdoor 2024', col:'#93c5fd', dash:[]},
+  indoor_2025:  {label:'Indoor 2025',  col:'#34d399', dash:[4,2]},
+  outdoor_2025: {label:'Outdoor 2025', col:'#6ee7b7', dash:[]},
+  indoor_2026:  {label:'Indoor 2026',  col:'#f59e0b', dash:[4,2]},
+  outdoor_2026: {label:'Outdoor 2026', col:'#fcd34d', dash:[]},
+  recent:       {label:'Recent 42d',   col:'#f87171', dash:[2,3]},
 };
+const CLOUD_ORDER  = ['indoor_2024','outdoor_2024','indoor_2025','outdoor_2025','indoor_2026','outdoor_2026','recent'];
+const CURVE_ORDER  = ['outdoor_2025','indoor_2025','outdoor_2024','indoor_2024','outdoor_2026','indoor_2026','recent'];
+const HR_ANN_SECS  = [60,300,600,1200,1800,3600,5400];
+const HR_ANN_LABELS= ['1min','5min','10min','20min','30min','60min','90min'];
 
-const HR_ANNOTATION_SECS = [60, 300, 600, 1200, 1800, 3600, 5400];
-const HR_ANN_LABELS = ['1min','5min','10min','20min','30min','60min','90min'];
+const HRR_BC = {'50':'#2060a0','60':'#206580','70':'#206050','80':'#806030','90':'#803020',vt1:'#804080',threshold:'#600a0a'};
+const HRR_DASH = {'50':[2,5],'60':[2,5],'70':[2,5],'80':[2,4],'90':[2,4],vt1:[5,3],threshold:[8,3]};
+const HRR_L = {'50':'50% HRR','60':'60% HRR','70':'70% HRR','80':'80% HRR','90':'90% HRR',vt1:'VT1',threshold:'Threshold'};
 
-function fmtDuration(s) {
-  if (s < 60)   return s + 's';
-  if (s < 3600) return Math.round(s/60) + 'min';
-  return (s/3600).toFixed(1) + 'h';
+function fmtDur(s){
+  if(s<60) return s+'s';
+  if(s<3600) return Math.round(s/60)+'min';
+  return (s/3600).toFixed(1)+'h';
 }
+function nn(v,d=0,sfx=''){return v==null?'<span class="null">—</span>':typeof v==='number'?v.toFixed(d)+sfx:v;}
 
-function n(v, dec=0, suffix='') {
-  if (v == null) return '—';
-  return typeof v === 'number' ? v.toFixed(dec) + suffix : v;
-}
+let cloudChart=null, curveChart=null;
 
-// Chart instances for toggle control
-let cloudChart = null, curveChart = null;
+async function init(){
+  const dash = await fetch('dashboard_data.json').then(r=>r.json());
+  document.getElementById('last-updated').textContent = 'built '+(dash.generated||'');
 
-async function init() {
-  const dashData = await fetch('dashboard_data.json').then(r => r.json());
-  const cloud    = dashData.cycling_cloud || {};
-  const curve    = dashData.cycling_curve || {};
-  const ceiData  = dashData.cei_series    || [];
-  const delta    = dashData.indoor_outdoor_delta || {};
+  const cloudSeries = dash.cycling_cloud?.series || {};
+  const curveSeries = dash.cycling_curve?.series || {};
+  const hrrMarkers  = dash.cycling_cloud?.hrr_markers || {};
+  const ceiData     = dash.cei_series || [];
 
-  document.getElementById('last-updated').textContent =
-    'data built ' + (dashData.generated || '');
-
-  const cloudSeries = cloud.series || {};
-  const curveSeries = curve.series || {};
-  const hrrMarkers  = cloud.hrr_markers || {};
-
-  buildCloudChart(cloudSeries, hrrMarkers);
-  buildCurveChart(curveSeries);
-  buildGradientGrid(cloudSeries, hrrMarkers);
+  buildCloud(cloudSeries, hrrMarkers);
+  buildGradTable(cloudSeries, hrrMarkers);
+  buildCurve(curveSeries);
   buildCEI(ceiData);
-  buildDelta(delta);
 
-  document.querySelectorAll('.panel').forEach((el,i) =>
-    setTimeout(() => el.classList.add('visible'), 100 + i*80));
+  document.querySelectorAll('.panel').forEach((el,i)=>
+    setTimeout(()=>el.classList.add('visible'),100+i*80));
   document.getElementById('loading').classList.add('hidden');
 }
 
 // ── Power/HR Cloud ────────────────────────────────────────────────────────────
-function buildCloudChart(cloudSeries, hrrMarkers) {
+function buildCloud(cloudSeries, hrrMarkers){
   const toggles = document.getElementById('cloud-toggles');
-  const ctx     = document.getElementById('chart-cloud').getContext('2d');
-  const active  = new Set(Object.keys(SERIES_META));
-  const datasets = [];
+  const ctx = document.getElementById('chart-cloud').getContext('2d');
+  const ds = [];
+  const active = new Set(CLOUD_ORDER);
 
   // HRR reference lines
-  const hrrKeys = ['50','60','70','80','90','vt1','threshold'];
-  const hrrColors = { '50':'#1a2030','60':'#1a2530','70':'#1a3025','80':'#302515','90':'#301515', vt1:'#301a30', threshold:'#200a0a' };
-  const hrrDash   = { '50':[2,4],'60':[2,4],'70':[2,4],'80':[2,4],'90':[2,4], vt1:[4,2], threshold:[6,3] };
-  const hrrLabel  = { '50':'50% HRR','60':'60% HRR','70':'70% HRR','80':'80% HRR','90':'90% HRR', vt1:'VT1', threshold:'Threshold' };
-  const hrrLineColors = { '50':'#334155','60':'#1e4060','70':'#1e5040','80':'#504020','90':'#501818', vt1:'#502050', threshold:'#400a0a' };
-
-  hrrKeys.forEach(k => {
-    const bpm = hrrMarkers[k];
-    if (!bpm) return;
-    datasets.push({
-      label: hrrLabel[k],
-      data: [{x:50,y:bpm},{x:450,y:bpm}],
-      borderColor: hrrLineColors[k],
-      backgroundColor: 'transparent',
-      borderWidth: 1,
-      borderDash: hrrDash[k],
-      pointRadius: 0,
-      showLine: true,
-      order: 10,
+  Object.entries(hrrMarkers).forEach(([key,bpm])=>{
+    ds.push({
+      label: HRR_L[key]||key, data:[{x:80,y:bpm},{x:320,y:bpm}],
+      borderColor: HRR_BC[key]||'#444', backgroundColor:'transparent',
+      borderWidth:1, borderDash:HRR_DASH[key]||[2,4],
+      pointRadius:0, showLine:true, order:20,
     });
   });
 
-  // Series datasets
-  const seriesDatasets = {};
-  Object.entries(SERIES_META).forEach(([sk, meta]) => {
-    const s = cloudSeries[sk];
-    if (!s) return;
-    const stats = s.bucket_stats || {};
-    const fit   = s.linear_fit;
+  CLOUD_ORDER.forEach(sk=>{
+    const s=cloudSeries[sk]; const m=SM[sk]; if(!s||!m) return;
+    const fit=s.linear_fit; const stats=s.bucket_stats||{};
 
-    const pts = Object.values(stats)
-      .sort((a,b) => a.power_w - b.power_w)
-      .map(b => ({ x: b.power_w, y: b.avg_hr }));
+    // Semi-transparent scatter
+    const pts=Object.values(stats).sort((a,b)=>a.power_w-b.power_w);
+    ds.push({
+      label:m.label, seriesKey:sk,
+      data:pts.map(b=>({x:b.power_w,y:b.avg_hr})),
+      backgroundColor:m.col+'55', borderColor:'transparent',
+      borderWidth:0, pointRadius:4, showLine:false, order:3,
+    });
 
-    const scatterDs = {
-      label: meta.label,
-      data: pts,
-      backgroundColor: meta.color + '80',
-      borderColor: meta.color,
-      borderWidth: 1,
-      pointRadius: 4,
-      showLine: false,
-      order: 2,
-      seriesKey: sk,
-    };
-
-    const lineDs = fit?.regression_line ? {
-      label: meta.label + ' fit',
-      data: fit.regression_line.map(p => ({ x: p.power_w, y: p.hr })),
-      borderColor: meta.color,
-      backgroundColor: 'transparent',
-      borderWidth: 2,
-      borderDash: meta.dash,
-      pointRadius: 0,
-      showLine: true,
-      tension: 0.3,
-      order: 1,
-      seriesKey: sk,
-    } : null;
-
-    seriesDatasets[sk] = { scatter: scatterDs, line: lineDs };
-    datasets.push(scatterDs);
-    if (lineDs) datasets.push(lineDs);
+    // Regression line only
+    if(fit?.regression_line?.length){
+      const wPerBpm = fit.slope>0 ? (1/fit.slope).toFixed(2) : '?';
+      ds.push({
+        label:`${m.label} (${wPerBpm} W/bpm)`, seriesKey:sk,
+        data:fit.regression_line.map(p=>({x:p.power_w,y:p.hr})),
+        borderColor:m.col, backgroundColor:'transparent',
+        borderWidth:2.5, borderDash:m.dash,
+        pointRadius:0, showLine:true, tension:0.2, order:1,
+      });
+    }
   });
 
-  cloudChart = new Chart(ctx, {
-    type: 'scatter',
-    data: { datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#111418', borderColor: '#1e2329', borderWidth: 1,
-          titleFont: { family: 'Barlow Condensed', size: 13 },
-          bodyFont:  { family: 'DM Mono', size: 11 },
-          titleColor: '#c8d0d8', bodyColor: '#6b7580',
-          callbacks: {
-            title: items => `${items[0].parsed.x}W`,
-            label: item => `${item.dataset.label}: ${item.parsed.y.toFixed(1)} bpm`,
+  cloudChart = new Chart(ctx,{
+    type:'scatter', data:{datasets:ds},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'nearest',intersect:false},
+      plugins:{
+        legend:{labels:{
+          color:'#6b7580', font:{family:'DM Mono',size:10}, boxWidth:20,
+          filter: item=>item.label && (item.label.includes('W/bpm') || Object.values(HRR_L).includes(item.label)),
+        }},
+        tooltip:{
+          backgroundColor:'#111418',borderColor:'#1e2329',borderWidth:1,
+          titleColor:'#c8d0d8',bodyColor:'#6b7580',
+          titleFont:{family:'Barlow Condensed',size:13},
+          bodyFont:{family:'DM Mono',size:11},
+          callbacks:{
+            title:items=>`${items[0].parsed.x}W`,
+            label:item=>`${item.dataset.label.split(' (')[0]}: ${item.parsed.y.toFixed(1)} bpm`,
           }
         },
       },
-      scales: {
-        x: { min: 50, max: 450, ticks: { color:'#6b7580', font:{size:10} }, grid: { color:'#1e2329' },
-             title: { display:true, text:'Power (W)', color:'#6b7580', font:{size:10} } },
-        y: { min: 90, max: 175, ticks: { color:'#6b7580', font:{size:10} }, grid: { color:'#1e2329' },
-             title: { display:true, text:'Heart Rate (bpm)', color:'#6b7580', font:{size:10} } },
+      scales:{
+        x:{min:80,max:320,ticks:{color:'#6b7580',font:{size:10},stepSize:20},grid:{color:'#1e2329'},
+           title:{display:true,text:'Power (W)',color:'#6b7580',font:{size:10}}},
+        y:{min:100,max:155,ticks:{color:'#6b7580',font:{size:10},stepSize:5},grid:{color:'#1e2329'},
+           title:{display:true,text:'Heart Rate (bpm)',color:'#6b7580',font:{size:10}}},
       },
     },
   });
 
   // Toggles
-  Object.entries(SERIES_META).forEach(([sk, meta]) => {
-    if (!cloudSeries[sk]) return;
-    const btn = document.createElement('button');
-    btn.className = 'stoggle active';
-    btn.textContent = meta.label;
-    btn.style.borderColor = meta.color;
-    btn.style.color = meta.color;
-    btn.addEventListener('click', () => {
-      const isActive = active.has(sk);
-      if (isActive) active.delete(sk); else active.add(sk);
-      btn.classList.toggle('active', !isActive);
-      btn.style.color = isActive ? '' : meta.color;
-      // Toggle datasets
-      cloudChart.data.datasets.forEach(ds => {
-        if (ds.seriesKey === sk) {
-          ds.hidden = isActive;
-        }
-      });
+  CLOUD_ORDER.forEach(sk=>{
+    const m=SM[sk]; if(!cloudSeries[sk]||!m) return;
+    const btn=document.createElement('button');
+    btn.className='stoggle active'; btn.textContent=m.label;
+    btn.style.borderColor=m.col; btn.style.color=m.col;
+    btn.addEventListener('click',()=>{
+      const on=active.has(sk);
+      if(on) active.delete(sk); else active.add(sk);
+      btn.classList.toggle('active',!on);
+      cloudChart.data.datasets.forEach(d=>{if(d.seriesKey===sk)d.hidden=on;});
       cloudChart.update();
     });
     toggles.appendChild(btn);
   });
 }
 
+// ── Gradient table (paired indoor/outdoor by year) ────────────────────────────
+function buildGradTable(cloudSeries, hrrMarkers){
+  const table = document.getElementById('grad-table');
+  const HRR_KEYS = ['50','60','70','80','90','vt1','threshold'];
+  const HRR_ROW_LABELS = {
+    '50':'50% HRR','60':'60% HRR','70':'70% HRR',
+    '80':'80% HRR','90':'90% HRR','vt1':'VT1','threshold':'Threshold'
+  };
+
+  // Group: [2024 indoor, 2024 outdoor], [2025 indoor, 2025 outdoor], etc + recent
+  const groups = [
+    {label:'2024', keys:['indoor_2024','outdoor_2024']},
+    {label:'2025', keys:['indoor_2025','outdoor_2025']},
+    {label:'2026', keys:['indoor_2026','outdoor_2026']},
+    {label:'Recent 42d', keys:['recent']},
+  ];
+
+  // Header
+  let thead = '<thead><tr><th>Metric</th>';
+  groups.forEach(g=>{
+    g.keys.forEach(sk=>{
+      const m=SM[sk]; if(!m) return;
+      thead+=`<th style="color:${m.col}">${m.label}</th>`;
+    });
+  });
+  thead+='</tr></thead>';
+
+  // W/bpm row
+  let tbody='<tbody>';
+  const addRow=(label, fn)=>{
+    let row=`<tr><td>${label}</td>`;
+    groups.forEach(g=>g.keys.forEach(sk=>{
+      const s=cloudSeries[sk]; const fit=s?.linear_fit;
+      row+=`<td>${fit ? fn(fit,sk) : '<span class="null">—</span>'}</td>`;
+    }));
+    row+='</tr>';
+    tbody+=row;
+  };
+
+  addRow('W/bpm', (fit)=> fit.slope>0 ? (1/fit.slope).toFixed(2) : '—');
+  addRow('R²',    (fit)=> fit.r2.toFixed(3));
+
+  // Separator
+  tbody+='<tr style="height:4px;background:var(--border)"><td colspan="99"></td></tr>';
+
+  // Power at each HRR marker
+  HRR_KEYS.forEach(key=>{
+    addRow(HRR_ROW_LABELS[key], (fit)=>{
+      const pwr = fit.markers?.[key]?.power_w;
+      return pwr!=null ? Math.round(pwr)+'W' : '—';
+    });
+  });
+  tbody+='</tbody>';
+
+  table.innerHTML = thead+tbody;
+}
+
 // ── Power Curve ───────────────────────────────────────────────────────────────
-function buildCurveChart(curveSeries) {
-  const toggles = document.getElementById('curve-toggles');
-  const ctx     = document.getElementById('chart-curve').getContext('2d');
-  const active  = new Set(Object.keys(SERIES_META));
-  const datasets = [];
-  const seriesOrder = ['outdoor_2025','indoor_2025','outdoor_2024','indoor_2024','outdoor_2026','indoor_2026','recent'];
+function buildCurve(curveSeries){
+  const toggles=document.getElementById('curve-toggles');
+  const ctx=document.getElementById('chart-curve').getContext('2d');
+  const ds=[];
+  const active=new Set(CURVE_ORDER);
 
-  seriesOrder.forEach(sk => {
-    const s = curveSeries[sk];
-    const meta = SERIES_META[sk];
-    if (!s || !meta) return;
-
-    const mmp = s.mmp || {};
-    const np  = s.np_curve || {};
-    const hrAnn = s.hr_annotations || {};
+  CURVE_ORDER.forEach(sk=>{
+    const s=curveSeries[sk]; const m=SM[sk]; if(!s||!m) return;
+    const mmp=s.mmp||{}; const np=s.np_curve||{}; const hrAnn=s.hr_annotations||{};
 
     // MMP line
-    const WEIGHT = 68;
-    const mmpPts = Object.entries(mmp)
-      .map(([dur, v]) => ({ x: parseInt(dur), y: (typeof v === 'object' ? v.power_w : v) / WEIGHT }))
-      .sort((a,b) => a.x - b.x);
-
-    datasets.push({
-      label: meta.label,
-      data: mmpPts,
-      borderColor: meta.color,
-      backgroundColor: 'transparent',
-      borderWidth: 2,
-      borderDash: meta.dash,
-      pointRadius: 0,
-      showLine: true,
-      tension: 0.2,
-      seriesKey: sk,
+    const mmpPts=Object.entries(mmp)
+      .map(([dur,v])=>({x:parseInt(dur),y:(typeof v==='object'?v.power_w:v)/WEIGHT}))
+      .sort((a,b)=>a.x-b.x);
+    if(mmpPts.length) ds.push({
+      label:m.label, seriesKey:sk,
+      data:mmpPts, borderColor:m.col, backgroundColor:'transparent',
+      borderWidth:2, borderDash:m.dash, pointRadius:0, showLine:true, tension:0.15, order:2,
     });
 
-    // NP line (5min+)
-    const npPts = Object.entries(np)
-      .map(([dur, pwr]) => ({ x: parseInt(dur), y: pwr / WEIGHT }))
-      .sort((a,b) => a.x - b.x);
+    // NP line (5min+, dashed)
+    const npPts=Object.entries(np)
+      .map(([dur,pwr])=>({x:parseInt(dur),y:pwr/WEIGHT}))
+      .sort((a,b)=>a.x-b.x);
+    if(npPts.length>2) ds.push({
+      label:m.label+' NP', seriesKey:sk,
+      data:npPts, borderColor:m.col+'90', backgroundColor:'transparent',
+      borderWidth:1.5, borderDash:[3,3], pointRadius:0, showLine:true, tension:0.15, order:3,
+    });
 
-    if (npPts.length > 2) {
-      datasets.push({
-        label: meta.label + ' NP',
-        data: npPts,
-        borderColor: meta.color + '80',
-        backgroundColor: 'transparent',
-        borderWidth: 1.5,
-        borderDash: [3,2],
-        pointRadius: 0,
-        showLine: true,
-        tension: 0.2,
-        seriesKey: sk,
-      });
-    }
-
-    // HR annotations as scatter points
-    const annPts = HR_ANNOTATION_SECS
-      .filter(dur => hrAnn[String(dur)])
-      .map(dur => {
-        const ann = hrAnn[String(dur)];
-        return { x: dur, y: ann.power_w / WEIGHT, hr: ann.hr, label: fmtDuration(dur) };
-      });
-
-    if (annPts.length) {
-      datasets.push({
-        label: meta.label + ' HR',
-        data: annPts,
-        backgroundColor: meta.color,
-        borderColor: '#0a0c0f',
-        borderWidth: 1,
-        pointRadius: 5,
-        pointStyle: 'circle',
-        showLine: false,
-        seriesKey: sk,
-      });
-    }
+    // HR annotation dots
+    const annPts=HR_ANN_SECS.filter(d=>hrAnn[String(d)]).map(d=>{
+      const a=hrAnn[String(d)];
+      return {x:d, y:a.power_w/WEIGHT, hr:a.hr, durLabel:fmtDur(d)};
+    });
+    if(annPts.length) ds.push({
+      label:m.label+' ●HR', seriesKey:sk,
+      data:annPts, backgroundColor:m.col, borderColor:'#0a0c0f',
+      borderWidth:1.5, pointRadius:6, showLine:false, order:1,
+    });
   });
 
-  curveChart = new Chart(ctx, {
-    type: 'scatter',
-    data: { datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#111418', borderColor: '#1e2329', borderWidth: 1,
-          titleFont: { family: 'Barlow Condensed', size: 13 },
-          bodyFont:  { family: 'DM Mono', size: 11 },
-          titleColor: '#c8d0d8', bodyColor: '#6b7580',
-          callbacks: {
-            title: items => fmtDuration(items[0].parsed.x),
-            label: item => {
-              const d = item.raw;
-              const base = `${item.dataset.label}: ${item.parsed.y.toFixed(2)} W/kg`;
-              return d.hr ? base + `  (${d.hr} bpm)` : base;
+  curveChart=new Chart(ctx,{
+    type:'scatter', data:{datasets:ds},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{
+          color:'#6b7580', font:{family:'DM Mono',size:10}, boxWidth:16,
+          filter:item=>item.label&&!item.label.includes(' NP')&&!item.label.includes(' ●HR'),
+        }},
+        tooltip:{
+          backgroundColor:'#111418',borderColor:'#1e2329',borderWidth:1,
+          titleColor:'#c8d0d8',bodyColor:'#6b7580',
+          titleFont:{family:'Barlow Condensed',size:13},
+          bodyFont:{family:'DM Mono',size:11},
+          callbacks:{
+            title:items=>fmtDur(items[0].parsed.x),
+            label:item=>{
+              const d=item.raw;
+              const base=`${item.dataset.label.split(' ')[0]+' '+item.dataset.label.split(' ')[1]||''}: ${item.parsed.y.toFixed(2)} W/kg`;
+              return d.hr ? base+`  · ${d.hr} bpm @ ${d.durLabel}` : base;
             },
           }
         },
       },
-      scales: {
-        x: {
-          type: 'logarithmic',
-          min: 5, max: 7200,
-          ticks: {
-            color: '#6b7580', font: { size: 10 },
-            callback: v => fmtDuration(v),
-          },
-          grid: { color: '#1e2329' },
-          title: { display: true, text: 'Duration (log scale)', color: '#6b7580', font: { size: 10 } },
-        },
-        y: {
-          ticks: { color:'#6b7580', font:{size:10} },
-          grid: { color:'#1e2329' },
-          title: { display:true, text:'Power (W/kg)', color:'#6b7580', font:{size:10} },
-        },
+      scales:{
+        x:{type:'logarithmic',min:5,max:7200,
+           ticks:{color:'#6b7580',font:{size:10},callback:v=>fmtDur(v)},
+           grid:{color:'#1e2329'},
+           title:{display:true,text:'Duration (log scale)',color:'#6b7580',font:{size:10}}},
+        y:{ticks:{color:'#6b7580',font:{size:10}},grid:{color:'#1e2329'},
+           title:{display:true,text:'Power (W/kg)',color:'#6b7580',font:{size:10}}},
       },
     },
   });
 
-  // Toggles
-  seriesOrder.forEach(sk => {
-    const meta = SERIES_META[sk];
-    if (!curveSeries[sk] || !meta) return;
-    const btn = document.createElement('button');
-    btn.className = 'stoggle active';
-    btn.textContent = meta.label;
-    btn.style.borderColor = meta.color;
-    btn.style.color = meta.color;
-    btn.addEventListener('click', () => {
-      const isActive = active.has(sk);
-      if (isActive) active.delete(sk); else active.add(sk);
-      btn.classList.toggle('active', !isActive);
-      btn.style.color = isActive ? '' : meta.color;
-      curveChart.data.datasets.forEach(ds => {
-        if (ds.seriesKey === sk) ds.hidden = isActive;
+  // Toggles — group by year
+  const groups=[
+    ['2024',['indoor_2024','outdoor_2024']],
+    ['2025',['indoor_2025','outdoor_2025']],
+    ['2026',['indoor_2026','outdoor_2026']],
+    ['42d', ['recent']],
+  ];
+  groups.forEach(([_year,keys])=>{
+    keys.forEach(sk=>{
+      const m=SM[sk]; if(!curveSeries[sk]||!m) return;
+      const btn=document.createElement('button');
+      btn.className='stoggle active'; btn.textContent=m.label;
+      btn.style.borderColor=m.col; btn.style.color=m.col;
+      btn.addEventListener('click',()=>{
+        const on=active.has(sk);
+        if(on) active.delete(sk); else active.add(sk);
+        btn.classList.toggle('active',!on);
+        curveChart.data.datasets.forEach(d=>{if(d.seriesKey===sk)d.hidden=on;});
+        curveChart.update();
       });
-      curveChart.update();
+      toggles.appendChild(btn);
     });
-    toggles.appendChild(btn);
   });
 }
 
-// ── Gradient grid ─────────────────────────────────────────────────────────────
-function buildGradientGrid(cloudSeries, hrrMarkers) {
-  const grid = document.getElementById('gradient-grid');
-  const order = ['indoor_2024','indoor_2025','indoor_2026','outdoor_2024','outdoor_2025','outdoor_2026','recent'];
-  order.forEach(sk => {
-    const s = cloudSeries[sk];
-    const meta = SERIES_META[sk];
-    if (!s || !meta) return;
-    const fit = s.linear_fit;
-    if (!fit) return;
+// ── CEI — common time axis ────────────────────────────────────────────────────
+function buildCEI(ceiData){
+  const ctx=document.getElementById('chart-cei').getContext('2d');
 
-    // W/bpm = 1/slope (slope is bpm/W)
-    const wPerBpm = fit.slope > 0 ? (1/fit.slope).toFixed(2) : '—';
-    const r2 = fit.r2.toFixed(3);
-    const markers = fit.markers || {};
+  // Build sorted unique date labels
+  const allDates=[...new Set(ceiData.map(s=>s.date))].sort();
 
-    const rows = [
-      ['VT1',       markers.vt1?.power_w,       'W'],
-      ['Threshold', markers.threshold?.power_w,  'W'],
-      ['80% HRR',   markers['80']?.power_w,      'W'],
-      ['90% HRR',   markers['90']?.power_w,      'W'],
-    ].map(([label, val, unit]) =>
-      `<div class="marker-row"><span class="mk">${label}</span><span class="mv">${val != null ? Math.round(val) + unit : '—'}</span></div>`
-    ).join('');
+  const indoor  = ceiData.filter(s=>s.is_indoor);
+  const outdoor = ceiData.filter(s=>!s.is_indoor);
 
-    grid.innerHTML += `
-      <div class="grad-card">
-        <div class="label" style="color:${meta.color}">${meta.label}</div>
-        <div class="value" style="color:${meta.color}">${wPerBpm}</div>
-        <div class="sub">W/bpm · R²=${r2}</div>
-        <div class="markers">${rows}</div>
-      </div>`;
-  });
-}
-
-// ── CEI Chart ─────────────────────────────────────────────────────────────────
-function buildCEI(ceiData) {
-  const ctx     = document.getElementById('chart-cei').getContext('2d');
-  const indoor  = ceiData.filter(s => s.is_indoor);
-  const outdoor = ceiData.filter(s => !s.is_indoor);
-
-  new Chart(ctx, {
-    type: 'scatter',
-    data: {
-      datasets: [
-        {
-          label: 'Indoor (W/bpm)',
-          data: indoor.map(s => ({ x: s.date, y: s.cei_inv, power: s.avg_power_w, hr: s.avg_hr_bpm })),
-          backgroundColor: 'rgba(96,165,250,0.75)',
-          borderColor: '#60a5fa',
-          pointRadius: 5, pointHoverRadius: 7,
-        },
-        {
-          label: 'Outdoor (W/bpm)',
-          data: outdoor.map(s => ({ x: s.date, y: s.cei_inv, power: s.avg_power_w, hr: s.avg_hr_bpm })),
-          backgroundColor: 'rgba(110,231,183,0.8)',
-          borderColor: '#6ee7b7',
-          pointRadius: 6, pointHoverRadius: 8,
-        },
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { labels: { color:'#6b7580', font:{family:'DM Mono',size:11}, boxWidth:12 } },
-        tooltip: {
-          backgroundColor:'#111418', borderColor:'#1e2329', borderWidth:1,
-          titleColor:'#c8d0d8', bodyColor:'#6b7580',
+  new Chart(ctx,{
+    type:'scatter',
+    data:{datasets:[
+      {
+        label:'Indoor 🏠',
+        data:indoor.map(s=>({x:s.date,y:s.cei_inv,power:s.avg_power_w,hr:s.avg_hr_bpm})),
+        backgroundColor:'rgba(96,165,250,0.75)', borderColor:'#60a5fa',
+        pointRadius:5, pointHoverRadius:7,
+      },
+      {
+        label:'Outdoor 🌳',
+        data:outdoor.map(s=>({x:s.date,y:s.cei_inv,power:s.avg_power_w,hr:s.avg_hr_bpm})),
+        backgroundColor:'rgba(110,231,183,0.8)', borderColor:'#6ee7b7',
+        pointRadius:6, pointHoverRadius:8,
+      },
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:'#6b7580',font:{family:'DM Mono',size:11},boxWidth:12}},
+        tooltip:{
+          backgroundColor:'#111418',borderColor:'#1e2329',borderWidth:1,
+          titleColor:'#c8d0d8',bodyColor:'#6b7580',
           titleFont:{family:'Barlow Condensed',size:13},
           bodyFont:{family:'DM Mono',size:11},
-          callbacks: {
-            label: ctx => {
-              const d = ctx.raw;
-              return `${d.y.toFixed(2)} W/bpm  |  ${d.power}W  ${d.hr}bpm`;
-            }
-          }
-        }
+          callbacks:{label:ctx=>{
+            const d=ctx.raw;
+            return `${d.y.toFixed(2)} W/bpm  ·  ${d.power}W  ${d.hr}bpm`;
+          }}
+        },
       },
-      scales: {
-        x: { type:'category', ticks:{color:'#3a4149',font:{size:10},maxTicksLimit:12}, grid:{color:'#1e2329'} },
-        y: { ticks:{color:'#6b7580',font:{size:10}}, grid:{color:'#1e2329'},
-             title:{display:true,text:'W / bpm',color:'#6b7580',font:{size:10}} },
-      }
-    }
+      scales:{
+        x:{type:'category', labels:allDates,
+           ticks:{color:'#3a4149',font:{size:10},maxTicksLimit:14},grid:{color:'#1e2329'}},
+        y:{ticks:{color:'#6b7580',font:{size:10}},grid:{color:'#1e2329'},
+           title:{display:true,text:'W / bpm',color:'#6b7580',font:{size:10}}},
+      },
+    },
   });
 }
 
-// ── Indoor/outdoor delta ──────────────────────────────────────────────────────
-function buildDelta(delta) {
-  const dg = document.getElementById('delta-grid');
-  ['indoor','outdoor'].forEach(ctx => {
-    const d   = delta[ctx] || {};
-    const col = ctx === 'indoor' ? '#60a5fa' : '#6ee7b7';
-    const cei = d.avg_cei ? (1/d.avg_cei).toFixed(2) + ' W/bpm' : '—';
-    dg.innerHTML += `
-      <div class="delta-cell">
-        <div style="font-family:var(--font-head);font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:${col};margin-bottom:12px">${ctx}</div>
-        <div class="delta-row"><span class="dk">Sessions</span><span class="dv">${d.n ?? '—'}</span></div>
-        <div class="delta-row"><span class="dk">Avg Power</span><span class="dv">${d.avg_power_w != null ? d.avg_power_w + ' W' : '—'}</span></div>
-        <div class="delta-row"><span class="dk">Avg NP</span><span class="dv">${d.avg_np_w != null ? d.avg_np_w + ' W' : '—'}</span></div>
-        <div class="delta-row"><span class="dk">Avg HR</span><span class="dv">${d.avg_hr_bpm != null ? d.avg_hr_bpm + ' bpm' : '—'}</span></div>
-        <div class="delta-row"><span class="dk">Avg CEI</span><span class="dv">${cei}</span></div>
-      </div>`;
-  });
-}
-
-init().catch(err => {
-  document.getElementById('loading').textContent = 'Error: ' + err.message;
+init().catch(err=>{
+  document.getElementById('loading').textContent='Error: '+err.message;
 });
 </script>
 </body>

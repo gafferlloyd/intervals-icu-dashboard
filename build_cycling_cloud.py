@@ -92,28 +92,61 @@ def compute_bucket_stats(raw_buckets: dict) -> dict:
     return stats
 
 
+# HR range for cycling regression
+FIT_HR_MIN_PRIMARY = 120.0
+FIT_HR_MAX_PRIMARY = 150.0
+FIT_MIN_BUCKETS    = 4
+FIT_MIN_R2         = 0.65
+
+
 def fit_linear(bucket_stats: dict, ftp: float) -> dict | None:
     """
-    Fit linear regression to power/HR data and extrapolate HRR markers.
-    Expects roughly linear relationship across sub-threshold efforts.
-    Uses all buckets up to ~110% FTP.
+    Two-tier linear regression for cycling power/HR characteristic.
+      1. Primary: HR 120–150 bpm (clean aerobic linear region)
+      2. Fallback: all sub-threshold buckets if primary has < 4 points
+    Reports actual fit HR range and tier used.
     """
-    items = sorted(bucket_stats.values(), key=lambda b: b["power_w"])
-    # Filter to sub-maximal range where relationship is linear
-    items = [b for b in items if b["power_w"] <= ftp * 1.05 and b["count"] >= MIN_POINTS]
+    all_items = sorted(
+        [b for b in bucket_stats.values()
+         if b["power_w"] <= ftp * 1.05 and b["count"] >= MIN_POINTS],
+        key=lambda b: b["power_w"]
+    )
 
-    if len(items) < 5:
+    def do_fit(items):
+        if len(items) < FIT_MIN_BUCKETS:
+            return None
+        powers = np.array([b["power_w"] for b in items])
+        hrs    = np.array([b["avg_hr"]  for b in items])
+        coeffs = np.polyfit(powers, hrs, 1)
+        y_pred = np.polyval(coeffs, powers)
+        ss_res = np.sum((hrs - y_pred) ** 2)
+        ss_tot = np.sum((hrs - np.mean(hrs)) ** 2)
+        r2 = 1 - ss_res / ss_tot if ss_tot > 0 else 0
+        if r2 < FIT_MIN_R2:
+            return None
+        return {"coeffs": coeffs, "r2": r2, "powers": powers}
+
+    # Tier 1: primary HR range
+    primary = [b for b in all_items
+               if FIT_HR_MIN_PRIMARY <= b["avg_hr"] <= FIT_HR_MAX_PRIMARY]
+    result  = do_fit(primary)
+    tier    = "primary"
+    hr_min  = FIT_HR_MIN_PRIMARY
+    hr_max  = FIT_HR_MAX_PRIMARY
+
+    # Tier 2: fallback
+    if result is None:
+        result = do_fit(all_items)
+        tier   = "fallback"
+        hr_min = float(min(b["avg_hr"] for b in all_items)) if all_items else 0
+        hr_max = float(max(b["avg_hr"] for b in all_items)) if all_items else 0
+
+    if result is None:
         return None
 
-    powers = np.array([b["power_w"] for b in items])
-    hrs    = np.array([b["avg_hr"]  for b in items])
-
-    coeffs = np.polyfit(powers, hrs, 1)
+    coeffs = result["coeffs"]
+    r2     = result["r2"]
     slope, intercept = coeffs
-    y_pred = np.polyval(coeffs, powers)
-    ss_res = np.sum((hrs - y_pred) ** 2)
-    ss_tot = np.sum((hrs - np.mean(hrs)) ** 2)
-    r2     = 1 - ss_res / ss_tot if ss_tot > 0 else 0
 
     def hr_to_power(hr_target: float) -> float | None:
         if slope == 0:
@@ -124,24 +157,28 @@ def fit_linear(bucket_stats: dict, ftp: float) -> dict | None:
     markers = {}
     for pct in HRR_MARKERS_PCT:
         bpm = hrr_to_bpm(pct)
-        pwr = hr_to_power(bpm)
-        markers[str(pct)] = {"hr": round(bpm, 1), "power_w": pwr}
+        markers[str(pct)] = {"hr": round(bpm, 1), "power_w": hr_to_power(bpm)}
+    markers["vt1"]       = {"hr": VT1_HR,      "power_w": hr_to_power(VT1_HR)}
+    markers["threshold"] = {"hr": THRESHOLD_HR, "power_w": hr_to_power(THRESHOLD_HR)}
 
-    markers["vt1"]       = {"hr": VT1_HR,       "power_w": hr_to_power(VT1_HR)}
-    markers["threshold"] = {"hr": THRESHOLD_HR,  "power_w": hr_to_power(THRESHOLD_HR)}
-
-    # Regression line for plotting
-    x_line = np.linspace(powers[0], powers[-1], 60)
-    y_line = np.polyval(coeffs, x_line)
+    # Regression line across actual fit HR range
+    hr_line  = np.linspace(hr_min, hr_max, 60)
+    x_line   = (hr_line - intercept) / slope
+    y_line   = hr_line
+    # Only include points within power range
+    line_pts = [(x, y) for x, y in zip(x_line, y_line)
+                if POWER_MIN <= x <= POWER_MAX]
 
     return {
         "slope"           : round(float(slope), 4),
         "intercept"       : round(float(intercept), 2),
         "r2"              : round(float(r2), 4),
+        "fit_hr_range"    : [round(hr_min, 1), round(hr_max, 1)],
+        "fit_tier"        : tier,
         "markers"         : markers,
         "regression_line" : [
             {"power_w": round(float(x), 1), "hr": round(float(y), 2)}
-            for x, y in zip(x_line, y_line)
+            for x, y in line_pts
         ],
     }
 
