@@ -84,6 +84,7 @@
   <div class="panel" id="p-cloud">
     <div class="panel-header">
       <h2>Pace / Heart Rate Characteristic</h2>
+      <span class="pill" style="background:#2a1a35;color:#c084fc">2023</span>
       <span class="pill p2024">2024</span><span class="pill p2025">2025</span>
       <span class="pill p2026">2026</span><span class="pill precent">Recent 42d</span>
       <span style="color:var(--dim);font-size:10px;margin-left:auto">Regression fitted HR 120–150 bpm</span>
@@ -102,7 +103,7 @@
       <table class="bests-table">
         <thead><tr>
           <th>Distance</th>
-          <th>2024</th><th>2025</th><th>2026</th><th>Recent 42d</th>
+          <th>2023</th><th>2024</th><th>2025</th><th>2026</th><th>Recent 42d</th>
         </tr></thead>
         <tbody id="bests-tbody"></tbody>
       </table>
@@ -120,12 +121,13 @@
 
 <script>
 const SC = {
+  year_2023: { line: '#c084fc', fill: 'rgba(192,132,252,0.12)', pt: 'rgba(192,132,252,0.45)' },
   year_2024: { line: '#60a5fa', fill: 'rgba(96,165,250,0.12)',  pt: 'rgba(96,165,250,0.45)'  },
   year_2025: { line: '#34d399', fill: 'rgba(52,211,153,0.12)',  pt: 'rgba(52,211,153,0.45)'  },
   year_2026: { line: '#f59e0b', fill: 'rgba(245,158,11,0.12)',  pt: 'rgba(245,158,11,0.45)'  },
   recent:    { line: '#f87171', fill: 'rgba(248,113,113,0.12)', pt: 'rgba(248,113,113,0.45)' },
 };
-const SL = { year_2024:'2024', year_2025:'2025', year_2026:'2026', recent:'Recent 42d' };
+const SL = { year_2023:'2023', year_2024:'2024', year_2025:'2025', year_2026:'2026', recent:'Recent 42d' };
 
 const HRR_LINE_COLORS = {
   '50':'#1a2535','60':'#1a2f40','70':'#1a3530','80':'#352515','90':'#351010',
@@ -189,7 +191,7 @@ function buildCloud(series, hrr) {
   });
 
   // Series: semi-transparent scatter + solid regression line
-  ['year_2024','year_2025','year_2026','recent'].forEach(sk => {
+  ['year_2023','year_2024','year_2025','year_2026','recent'].forEach(sk => {
     const s = series[sk]; if (!s) return;
     const col = SC[sk];
     const fit = s.linear_fit;
@@ -268,7 +270,7 @@ function buildCloud(series, hrr) {
 
 function buildGradients(series) {
   const grid = document.getElementById('gradient-grid');
-  ['year_2024','year_2025','year_2026','recent'].forEach(sk => {
+  ['year_2023','year_2024','year_2025','year_2026','recent'].forEach(sk => {
     const s = series[sk]; if (!s) return;
     const fit = s.linear_fit;
     const col = SC[sk].line;
@@ -303,7 +305,7 @@ function buildGradients(series) {
 
 function buildBests(bSeries) {
   const distances = ['1k','3k','5k','10k','HM','25k','30k','Mar'];
-  const skeys     = ['year_2024','year_2025','year_2026','recent'];
+  const skeys     = ['year_2023','year_2024','year_2025','year_2026','recent'];
   const overallBest = {};
   distances.forEach(d => {
     let best = Infinity;
@@ -332,8 +334,8 @@ function buildBests(bSeries) {
 }
 
 function buildCooper(bSeries) {
-  const skeys  = ['year_2024','year_2025','year_2026','recent'];
-  const colors = { year_2024:'var(--y2024)', year_2025:'var(--y2025)', year_2026:'var(--y2026)', recent:'var(--recent)' };
+  const skeys  = ['year_2023','year_2024','year_2025','year_2026','recent'];
+  const colors = { year_2023:'#c084fc', year_2024:'var(--y2024)', year_2025:'var(--y2025)', year_2026:'var(--y2026)', recent:'var(--recent)' };
   const grid   = document.getElementById('cooper-grid');
 
   skeys.forEach(sk => {

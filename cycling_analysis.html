@@ -108,6 +108,8 @@
 <script>
 const WEIGHT = 68;
 const SM = {
+  indoor_2023:  {label:'Indoor 2023',  col:'#c084fc', dash:[4,2]},
+  outdoor_2023: {label:'Outdoor 2023', col:'#e879f9', dash:[]},
   indoor_2024:  {label:'Indoor 2024',  col:'#60a5fa', dash:[4,2]},
   outdoor_2024: {label:'Outdoor 2024', col:'#93c5fd', dash:[]},
   indoor_2025:  {label:'Indoor 2025',  col:'#34d399', dash:[4,2]},
@@ -116,8 +118,8 @@ const SM = {
   outdoor_2026: {label:'Outdoor 2026', col:'#fcd34d', dash:[]},
   recent:       {label:'Recent 42d',   col:'#f87171', dash:[2,3]},
 };
-const CLOUD_ORDER  = ['indoor_2024','outdoor_2024','indoor_2025','outdoor_2025','indoor_2026','outdoor_2026','recent'];
-const CURVE_ORDER  = ['outdoor_2025','indoor_2025','outdoor_2024','indoor_2024','outdoor_2026','indoor_2026','recent'];
+const CLOUD_ORDER  = ['indoor_2023','outdoor_2023','indoor_2024','outdoor_2024','indoor_2025','outdoor_2025','indoor_2026','outdoor_2026','recent'];
+const CURVE_ORDER  = ['outdoor_2025','indoor_2025','outdoor_2024','indoor_2024','outdoor_2023','indoor_2023','outdoor_2026','indoor_2026','recent'];
 const HR_ANN_SECS  = [60,300,600,1200,1800,3600,5400];
 const HR_ANN_LABELS= ['1min','5min','10min','20min','30min','60min','90min'];
 
@@ -254,6 +256,7 @@ function buildGradTable(cloudSeries, hrrMarkers){
 
   // Group: [2024 indoor, 2024 outdoor], [2025 indoor, 2025 outdoor], etc + recent
   const groups = [
+    {label:'2023', keys:['indoor_2023','outdoor_2023']},
     {label:'2024', keys:['indoor_2024','outdoor_2024']},
     {label:'2025', keys:['indoor_2025','outdoor_2025']},
     {label:'2026', keys:['indoor_2026','outdoor_2026']},
@@ -380,6 +383,7 @@ function buildCurve(curveSeries){
 
   // Toggles — group by year
   const groups=[
+    ['2023',['indoor_2023','outdoor_2023']],
     ['2024',['indoor_2024','outdoor_2024']],
     ['2025',['indoor_2025','outdoor_2025']],
     ['2026',['indoor_2026','outdoor_2026']],
