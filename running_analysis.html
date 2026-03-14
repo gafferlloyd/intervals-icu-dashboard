@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Running Analysis — Gareth Lloyd</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Barlow+Condensed:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg:       #0a0c0f;
+    --surface:  #111418;
+    --border:   #1e2329;
+    --muted:    #3a4149;
+    --text:     #c8d0d8;
+    --dim:      #6b7580;
+    --accent:   #e8f020;
+    --y2024:    #60a5fa;
+    --y2025:    #34d399;
+    --y2026:    #f59e0b;
+    --recent:   #f87171;
+    --font-mono:'DM Mono', monospace;
+    --font-head:'Barlow Condensed', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-mono); font-size: 13px; line-height: 1.5; min-height: 100vh; }
+
+  /* ── Nav ── */
+  nav { border-bottom: 1px solid var(--border); padding: 12px 32px; display: flex; gap: 24px; align-items: center; }
+  nav a { color: var(--dim); text-decoration: none; font-family: var(--font-head); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
+  nav a:hover, nav a.active { color: var(--accent); }
+  nav .sep { color: var(--muted); }
+
+  /* ── Header ── */
+  header { border-bottom: 1px solid var(--border); padding: 20px 32px; display: flex; align-items: baseline; gap: 16px; }
+  header h1 { font-family: var(--font-head); font-size: 28px; font-weight: 700; letter-spacing: 0.04em; color: #fff; text-transform: uppercase; }
+  header h1 span { color: var(--recent); }
+  header .sub { color: var(--dim); font-size: 11px; margin-left: auto; }
+
+  /* ── Layout ── */
+  main { padding: 24px 32px; display: grid; gap: 24px; }
+
+  /* ── Panels ── */
+  .panel { background: var(--surface); border: 1px solid var(--border); opacity: 0; transform: translateY(8px); transition: opacity 0.4s ease, transform 0.4s ease; }
+  .panel.visible { opacity: 1; transform: none; }
+  .panel-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .panel-header h2 { font-family: var(--font-head); font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); }
+  .panel-body { padding: 20px; }
+  .chart-wrap { position: relative; height: 380px; }
+
+  /* ── Series legend pills ── */
+  .pill { font-size: 10px; padding: 2px 8px; border-radius: 2px; font-weight: 600; letter-spacing: 0.06em; font-family: var(--font-head); }
+  .p2024 { background: #0f1f35; color: var(--y2024); }
+  .p2025 { background: #0f2a1f; color: var(--y2025); }
+  .p2026 { background: #2a1f05; color: var(--y2026); }
+  .precent { background: #2a0f0f; color: var(--recent); }
+
+  /* ── Gradient summary cards ── */
+  .gradient-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); }
+  .grad-card { background: var(--surface); padding: 16px 20px; }
+  .grad-card .label { font-family: var(--font-head); font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); margin-bottom: 8px; }
+  .grad-card .value { font-family: var(--font-head); font-size: 26px; font-weight: 700; line-height: 1; }
+  .grad-card .sub { color: var(--dim); font-size: 11px; margin-top: 4px; }
+  .grad-card .markers { margin-top: 10px; display: grid; gap: 3px; font-size: 11px; }
+  .grad-card .marker-row { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px solid var(--border); }
+  .grad-card .marker-row:last-child { border-bottom: none; }
+  .grad-card .mk { color: var(--dim); }
+  .grad-card .mv { color: var(--text); font-variant-numeric: tabular-nums; }
+
+  /* ── Bests table ── */
+  .bests-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .bests-table th { font-family: var(--font-head); font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  .bests-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+  .bests-table tr:last-child td { border-bottom: none; }
+  .bests-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .bests-table td.best { color: var(--accent); font-weight: 500; }
+  .null { color: var(--muted); }
+
+  /* ── Cooper cards ── */
+  .cooper-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); }
+  .cooper-card { background: var(--surface); padding: 16px 20px; }
+  .cooper-card .label { font-family: var(--font-head); font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+  .cooper-card .vo2 { font-family: var(--font-head); font-size: 36px; font-weight: 700; line-height: 1; }
+  .cooper-card .dist { color: var(--dim); font-size: 11px; margin-top: 4px; }
+
+  #loading { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); z-index: 100; }
+  #loading.hidden { display: none; }
+</style>
+</head>
+<body>
+<div id="loading">Loading running analysis…</div>
+
+<nav>
+  <a href="index.html">📊 Summary</a>
+  <span class="sep">·</span>
+  <a href="running_analysis.html" class="active">🏃 Running</a>
+  <span class="sep">·</span>
+  <a href="cycling_analysis.html">🚲 Cycling</a>
+</nav>
+
+<header>
+  <h1>Running <span>Analysis</span></h1>
+  <div class="sub" id="last-updated"></div>
+</header>
+
+<main>
+  <!-- Pace / HR Cloud -->
+  <div class="panel" id="p-cloud">
+    <div class="panel-header">
+      <h2>Pace / Heart Rate Characteristic</h2>
+      <span class="pill p2024">2024</span>
+      <span class="pill p2025">2025</span>
+      <span class="pill p2026">2026</span>
+      <span class="pill precent">Recent 42d</span>
+    </div>
+    <div class="panel-body">
+      <div class="chart-wrap"><canvas id="chart-cloud"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Gradient summary -->
+  <div class="panel" id="p-grad">
+    <div class="panel-header"><h2>Regression Summary — Gradient &amp; Key Paces</h2></div>
+    <div class="panel-body" style="padding:0">
+      <div class="gradient-grid" id="gradient-grid"></div>
+    </div>
+  </div>
+
+  <!-- Best times -->
+  <div class="panel" id="p-bests">
+    <div class="panel-header"><h2>Personal Bests by Year</h2></div>
+    <div class="panel-body" style="padding:0">
+      <table class="bests-table" id="bests-table">
+        <thead>
+          <tr>
+            <th>Distance</th>
+            <th>2024</th>
+            <th>2025</th>
+            <th>2026</th>
+            <th>Recent 42d</th>
+          </tr>
+        </thead>
+        <tbody id="bests-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Cooper -->
+  <div class="panel" id="p-cooper">
+    <div class="panel-header">
+      <h2>Cooper Test — Best 12-min Distance &amp; Estimated VO₂max</h2>
+    </div>
+    <div class="panel-body" style="padding:0">
+      <div class="cooper-grid" id="cooper-grid"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const SERIES_COLORS = {
+  year_2024: { line: '#60a5fa', point: 'rgba(96,165,250,0.5)'  },
+  year_2025: { line: '#34d399', point: 'rgba(52,211,153,0.5)'  },
+  year_2026: { line: '#f59e0b', point: 'rgba(245,158,11,0.5)'  },
+  recent:    { line: '#f87171', point: 'rgba(248,113,113,0.5)' },
+};
+const SERIES_LABELS = {
+  year_2024: '2024', year_2025: '2025',
+  year_2026: '2026', recent: 'Recent 42d',
+};
+const HRR_COLORS = {
+  '50': '#334155', '60': '#1e3a5f', '70': '#1a3a2a',
+  '80': '#3a2a0a', '90': '#3a0f0f',
+  vt1: '#3a1a3a', threshold: '#2a0a0a',
+};
+const HRR_LABELS = {
+  '50':'50% HRR', '60':'60% HRR', '70':'70% HRR',
+  '80':'80% HRR', '90':'90% HRR',
+  vt1:'VT1', threshold:'Threshold',
+};
+
+function paceSec(s) {
+  // Convert sec/km to display label MM:SS
+  const m = Math.floor(s/60), sec = Math.round(s%60);
+  return `${m}:${sec.toString().padStart(2,'0')}`;
+}
+
+function n(v, dec=0, suffix='') {
+  if (v == null) return '<span class="null">—</span>';
+  return typeof v === 'number' ? v.toFixed(dec) + suffix : v;
+}
+
+async function init() {
+  const [dashData, bestsData] = await Promise.all([
+    fetch('dashboard_data.json').then(r => r.json()),
+    fetch('running_bests.json').then(r => r.json()),
+  ]);
+
+  const cloud  = dashData.running_cloud || {};
+  const series = cloud.series || {};
+  const hrr    = cloud.hrr_markers || {};
+
+  document.getElementById('last-updated').textContent =
+    'data built ' + (cloud.last_updated || dashData.generated || '');
+
+  // ── Pace/HR Cloud Chart ───────────────────────────────────────────────────
+  const ctx = document.getElementById('chart-cloud').getContext('2d');
+  const datasets = [];
+
+  // HRR reference lines (horizontal)
+  Object.entries(hrr).forEach(([key, bpm]) => {
+    datasets.push({
+      label: HRR_LABELS[key] || key,
+      data: [{x: 180, y: bpm}, {x: 420, y: bpm}],
+      borderColor: HRR_COLORS[key] || '#333',
+      backgroundColor: 'transparent',
+      borderWidth: 1,
+      borderDash: key === 'threshold' ? [6,3] : key === 'vt1' ? [4,2] : [2,4],
+      pointRadius: 0,
+      tension: 0,
+      order: 10,
+    });
+  });
+
+  // Series: binned averages + regression line
+  const seriesOrder = ['year_2024','year_2025','year_2026','recent'];
+  seriesOrder.forEach(sk => {
+    const s = series[sk];
+    if (!s) return;
+    const col = SERIES_COLORS[sk];
+    const stats = s.bucket_stats || {};
+    const fit   = s.linear_fit;
+
+    // Binned average scatter
+    const pts = Object.values(stats)
+      .sort((a,b) => a.pace_sec - b.pace_sec)
+      .map(b => ({ x: b.pace_sec, y: b.avg_hr, count: b.count, std: b.std_hr }));
+
+    datasets.push({
+      label: SERIES_LABELS[sk],
+      data: pts.map(p => ({ x: p.x, y: p.y })),
+      backgroundColor: col.point,
+      borderColor: col.line,
+      borderWidth: 1,
+      pointRadius: pts.map(p => Math.min(3 + Math.sqrt(p.count/50), 8)),
+      pointHoverRadius: 8,
+      showLine: false,
+      order: 2,
+    });
+
+    // Regression line
+    if (fit && fit.regression_line) {
+      datasets.push({
+        label: `${SERIES_LABELS[sk]} fit`,
+        data: fit.regression_line.map(p => ({ x: p.pace_sec, y: p.hr })),
+        borderColor: col.line,
+        backgroundColor: 'transparent',
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0.3,
+        showLine: true,
+        order: 1,
+      });
+    }
+  });
+
+  new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false },
+      plugins: {
+        legend: {
+          labels: {
+            color: '#6b7580',
+            font: { family: 'DM Mono', size: 10 },
+            boxWidth: 16,
+            filter: item => item.label && !item.label.includes('fit') && !item.label.includes('HRR') && item.label !== 'VT1' && item.label !== 'Threshold',
+          }
+        },
+        tooltip: {
+          backgroundColor: '#111418', borderColor: '#1e2329', borderWidth: 1,
+          titleColor: '#c8d0d8', bodyColor: '#6b7580',
+          titleFont: { family: 'Barlow Condensed', size: 13 },
+          bodyFont:  { family: 'DM Mono', size: 11 },
+          callbacks: {
+            title: items => {
+              const x = items[0].parsed.x;
+              return `Pace: ${paceSec(x)} /km`;
+            },
+            label: item => `${item.dataset.label}: ${item.parsed.y.toFixed(1)} bpm`,
+          }
+        },
+        annotation: { annotations: {} },
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          min: 175, max: 425,
+          ticks: {
+            color: '#6b7580', font: { size: 10 },
+            callback: v => paceSec(v),
+            stepSize: 30,
+          },
+          grid: { color: '#1e2329' },
+          title: { display: true, text: 'Pace (min/km)', color: '#6b7580', font: { size: 10 } },
+        },
+        y: {
+          min: 95, max: 175,
+          ticks: { color: '#6b7580', font: { size: 10 } },
+          grid: { color: '#1e2329' },
+          title: { display: true, text: 'Heart Rate (bpm)', color: '#6b7580', font: { size: 10 } },
+        },
+      },
+    },
+  });
+
+  // ── Gradient summary cards ────────────────────────────────────────────────
+  const grid = document.getElementById('gradient-grid');
+  seriesOrder.forEach(sk => {
+    const s = series[sk];
+    if (!s) return;
+    const fit = s.linear_fit;
+    const col = SERIES_COLORS[sk].line;
+    const markers = fit?.markers || {};
+
+    // Gradient: sec/km per bpm — slope is bpm per sec/km so invert sign label
+    const grad = fit ? Math.abs(fit.slope).toFixed(4) : '—';
+    const r2   = fit ? fit.r2.toFixed(4) : '—';
+
+    const markerRows = [
+      ['VT1',       markers.vt1?.pace_label],
+      ['Threshold', markers.threshold?.pace_label],
+      ['80% HRR',   markers['80']?.pace_label],
+      ['90% HRR',   markers['90']?.pace_label],
+    ].map(([label, val]) =>
+      `<div class="marker-row"><span class="mk">${label}</span><span class="mv">${val || '—'} /km</span></div>`
+    ).join('');
+
+    grid.innerHTML += `
+      <div class="grad-card">
+        <div class="label" style="color:${col}">${SERIES_LABELS[sk]}</div>
+        <div class="value" style="color:${col}">${grad}</div>
+        <div class="sub">sec/km per bpm · R²=${r2}</div>
+        <div class="markers">${markerRows}</div>
+      </div>`;
+  });
+
+  // ── Best times table ──────────────────────────────────────────────────────
+  const distances = ['1k','3k','5k','10k','HM','25k','30k','Mar'];
+  const seriesKeys = ['year_2024','year_2025','year_2026','recent'];
+  const bSeries = bestsData.series || {};
+
+  // Find overall best per distance for highlighting
+  const overallBest = {};
+  distances.forEach(d => {
+    let best = Infinity;
+    seriesKeys.forEach(sk => {
+      const t = bSeries[sk]?.best_times?.[d]?.time_s;
+      if (t && t < best) best = t;
+    });
+    overallBest[d] = best;
+  });
+
+  const tbody = document.getElementById('bests-tbody');
+  distances.forEach(d => {
+    const cells = seriesKeys.map(sk => {
+      const bt = bSeries[sk]?.best_times?.[d];
+      if (!bt) return '<td class="null">—</td>';
+      const isBest = bt.time_s === overallBest[d];
+      return `<td class="${isBest ? 'best' : ''}">${bt.time_str}<br><span style="color:var(--dim);font-size:10px">${bt.pace_label} /km</span></td>`;
+    }).join('');
+    tbody.innerHTML += `<tr><td style="font-weight:500">${d}</td>${cells}</tr>`;
+  });
+
+  // ── Cooper cards ──────────────────────────────────────────────────────────
+  const cooperGrid = document.getElementById('cooper-grid');
+  const cooperColors = {
+    year_2024: 'var(--y2024)', year_2025: 'var(--y2025)',
+    year_2026: 'var(--y2026)', recent: 'var(--recent)',
+  };
+  seriesKeys.forEach(sk => {
+    const cooper = bSeries[sk]?.cooper;
+    const col    = cooperColors[sk];
+    cooperGrid.innerHTML += `
+      <div class="cooper-card">
+        <div class="label" style="color:${col}">${SERIES_LABELS[sk]}</div>
+        <div class="vo2" style="color:${col}">${cooper ? cooper.vo2max.toFixed(1) : '—'}</div>
+        <div class="dist">VO₂max (ml/kg/min)</div>
+        <div class="dist" style="margin-top:6px">${cooper ? cooper.distance_m + ' m in 12 min' : 'No data'}</div>
+      </div>`;
+  });
+
+  // Reveal
+  document.querySelectorAll('.panel').forEach((el,i) =>
+    setTimeout(() => el.classList.add('visible'), 100 + i*80));
+  document.getElementById('loading').classList.add('hidden');
+}
+
+init().catch(err => {
+  document.getElementById('loading').textContent = 'Error: ' + err.message;
+});
+</script>
+</body>
+</html>

@@ -15,250 +15,99 @@
     --muted:     #3a4149;
     --text:      #c8d0d8;
     --dim:       #6b7580;
-    --accent:    #e8f020;       /* sharp yellow-green — power/fitness */
-    --atl:       #ff6b35;       /* orange — fatigue */
-    --tsb-pos:   #34d399;       /* green — form */
-    --tsb-neg:   #f87171;       /* red — fatigue */
-    --indoor:    #60a5fa;       /* blue — indoor */
-    --outdoor:   #a78bfa;       /* violet — outdoor */
-    --running:   #fb923c;       /* orange — running */
+    --accent:    #e8f020;
+    --atl:       #ff6b35;
+    --tsb-pos:   #34d399;
+    --tsb-neg:   #f87171;
+    --indoor:    #60a5fa;
+    --outdoor:   #a78bfa;
+    --running:   #fb923c;
     --font-mono: 'DM Mono', monospace;
     --font-head: 'Barlow Condensed', sans-serif;
   }
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-mono); font-size: 13px; line-height: 1.5; min-height: 100vh; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-mono);
-    font-size: 13px;
-    line-height: 1.5;
-    min-height: 100vh;
-  }
+  /* Nav */
+  nav { border-bottom: 1px solid var(--border); padding: 12px 32px; display: flex; gap: 24px; align-items: center; }
+  nav a { color: var(--dim); text-decoration: none; font-family: var(--font-head); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
+  nav a:hover, nav a.active { color: var(--accent); }
+  nav .sep { color: var(--muted); }
 
-  /* ── Header ── */
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 20px 32px;
-    display: flex;
-    align-items: baseline;
-    gap: 24px;
-  }
-  header h1 {
-    font-family: var(--font-head);
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: #fff;
-    text-transform: uppercase;
-  }
+  /* Header */
+  header { border-bottom: 1px solid var(--border); padding: 20px 32px; display: flex; align-items: baseline; gap: 24px; }
+  header h1 { font-family: var(--font-head); font-size: 28px; font-weight: 700; letter-spacing: 0.04em; color: #fff; text-transform: uppercase; }
   header h1 span { color: var(--accent); }
   #generated-time { color: var(--dim); font-size: 11px; margin-left: auto; cursor: pointer; }
   #generated-time:hover { color: var(--text); }
-  #diag-toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--surface); border: 1px solid var(--accent);
-    color: var(--accent); font-family: var(--font-mono); font-size: 11px;
-    padding: 10px 16px; border-radius: 2px; opacity: 0;
-    transition: opacity 0.3s; pointer-events: none; z-index: 999;
-  }
+  #diag-toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--accent); color: var(--accent); font-family: var(--font-mono); font-size: 11px; padding: 10px 16px; border-radius: 2px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; }
   #diag-toast.show { opacity: 1; }
 
-  /* ── Layout ── */
+  /* Layout */
   main { padding: 24px 32px; display: grid; gap: 24px; }
 
-  /* ── Summary strip ── */
-  .summary-strip {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-  }
-  .stat-cell {
-    background: var(--surface);
-    padding: 16px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .stat-cell .label {
-    font-family: var(--font-head);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--dim);
-  }
-  .stat-cell .value {
-    font-family: var(--font-head);
-    font-size: 32px;
-    font-weight: 700;
-    color: #fff;
-    line-height: 1;
-  }
-  .stat-cell .value.accent  { color: var(--accent); }
-  .stat-cell .value.pos     { color: var(--tsb-pos); }
-  .stat-cell .value.neg     { color: var(--tsb-neg); }
+  /* Summary strip */
+  .summary-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .stat-cell { background: var(--surface); padding: 16px 20px; display: flex; flex-direction: column; gap: 4px; }
+  .stat-cell .label { font-family: var(--font-head); font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); }
+  .stat-cell .value { font-family: var(--font-head); font-size: 32px; font-weight: 700; color: #fff; line-height: 1; }
+  .stat-cell .value.accent { color: var(--accent); }
+  .stat-cell .value.pos { color: var(--tsb-pos); }
+  .stat-cell .value.neg { color: var(--tsb-neg); }
   .stat-cell .sub { color: var(--dim); font-size: 11px; }
 
-  /* ── Panels ── */
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-  }
-  .panel-header {
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .panel-header h2 {
-    font-family: var(--font-head);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text);
-  }
-  .panel-header .pill {
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 2px;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-  }
+  /* Panels */
+  .panel { background: var(--surface); border: 1px solid var(--border); }
+  .panel-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+  .panel-header h2 { font-family: var(--font-head); font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text); }
+  .pill { font-size: 10px; padding: 2px 8px; border-radius: 2px; font-weight: 500; letter-spacing: 0.06em; }
   .pill-ctl  { background: #1a2a1a; color: var(--accent); }
   .pill-atl  { background: #2a1a10; color: var(--atl); }
   .pill-tsb  { background: #1a2020; color: var(--tsb-pos); }
-  .pill-cei  { background: #1a1a2a; color: var(--indoor); }
-
   .panel-body { padding: 20px; }
   .chart-wrap { position: relative; height: 260px; }
 
-  /* ── Two-col layout ── */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-
-  /* ── Sessions table ── */
-  .sessions-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-  }
-  .sessions-table th {
-    font-family: var(--font-head);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--dim);
-    text-align: left;
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-  .sessions-table td {
-    padding: 9px 12px;
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-    white-space: nowrap;
-  }
+  /* Sessions table */
+  .sessions-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .sessions-table th { font-family: var(--font-head); font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .sessions-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--text); white-space: nowrap; }
   .sessions-table tr:last-child td { border-bottom: none; }
   .sessions-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-  .badge {
-    display: inline-block;
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 2px 6px;
-    border-radius: 2px;
-  }
-  .badge-indoor   { background: #0f1f35; color: var(--indoor); }
-  .badge-outdoor  { background: #1a1530; color: var(--outdoor); }
-  .badge-running  { background: #2a1505; color: var(--running); }
-
   .num { text-align: right; font-variant-numeric: tabular-nums; }
   .null { color: var(--muted); }
 
-  /* ── Zone bars ── */
-  .zone-bar {
-    display: flex;
-    height: 6px;
-    gap: 1px;
-    width: 80px;
-  }
+  /* Zone bars */
+  .zone-bar { display: flex; height: 6px; gap: 1px; width: 80px; }
   .zone-seg { height: 100%; border-radius: 1px; }
-  .z1 { background: #3b5268; }
-  .z2 { background: #2d7d4f; }
-  .z3 { background: #c09010; }
-  .z4 { background: #c05010; }
-  .z5 { background: #a02020; }
+  .z1 { background: #3b5268; } .z2 { background: #2d7d4f; } .z3 { background: #c09010; } .z4 { background: #c05010; } .z5 { background: #a02020; }
 
-  /* ── Delta panel ── */
-  .delta-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
-    background: var(--border);
-  }
-  .delta-cell {
-    background: var(--surface);
-    padding: 16px 20px;
-  }
-  .delta-cell .context {
-    font-family: var(--font-head);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-  .delta-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 4px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 12px;
-  }
-  .delta-row:last-child { border-bottom: none; }
-  .delta-row .dk { color: var(--dim); }
-  .delta-row .dv { color: var(--text); font-variant-numeric: tabular-nums; }
-
-  /* ── Loading / error ── */
-  #loading {
-    position: fixed; inset: 0;
-    background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--font-head);
-    font-size: 14px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--dim);
-    z-index: 100;
-  }
-  #loading.hidden { display: none; }
-
-  /* ── Animations ── */
-  .panel { opacity: 0; transform: translateY(8px);
-           transition: opacity 0.4s ease, transform 0.4s ease; }
+  /* Animations */
+  .panel { opacity: 0; transform: translateY(8px); transition: opacity 0.4s ease, transform 0.4s ease; }
   .panel.visible { opacity: 1; transform: none; }
   .summary-strip { opacity: 0; transition: opacity 0.3s ease; }
   .summary-strip.visible { opacity: 1; }
+
+  #loading { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); z-index: 100; }
+  #loading.hidden { display: none; }
 </style>
 </head>
 <body>
 
 <div id="loading">Loading training data…</div>
+<div id="diag-toast">Diagnostic copied to clipboard</div>
+
+<nav>
+  <a href="index.html" class="active">📊 Summary</a>
+  <span class="sep">·</span>
+  <a href="running_analysis.html">🏃 Running</a>
+  <span class="sep">·</span>
+  <a href="cycling_analysis.html">🚲 Cycling</a>
+</nav>
 
 <header>
   <h1>Training <span>Dashboard</span></h1>
   <span id="generated-time" title="Click to copy diagnostic report"></span>
 </header>
-<div id="diag-toast">Diagnostic copied to clipboard</div>
 
 <main>
   <div class="summary-strip" id="summary-strip">
@@ -307,52 +156,31 @@
     </div>
   </div>
 
-  <!-- CEI Chart -->
-  <div class="panel" id="p-cei">
-    <div class="panel-header">
-      <h2>Cardiac Efficiency Index</h2>
-      <span class="pill pill-cei">W / bpm — higher is better</span>
-    </div>
-    <div class="panel-body">
-      <div class="chart-wrap"><canvas id="chart-cei"></canvas></div>
-    </div>
-  </div>
-
-  <div class="two-col">
-    <!-- Recent Sessions -->
-    <div class="panel" id="p-sessions" style="grid-column: 1 / -1;">
-      <div class="panel-header"><h2>Recent Sessions</h2></div>
-      <div class="panel-body" style="padding:0;">
-        <table class="sessions-table" id="sessions-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Sport</th>
-              <th>Env</th>
-              <th>Duration</th>
-              <th class="num">Dist km</th>
-              <th class="num">Elev m</th>
-              <th class="num">Avg HR</th>
-              <th class="num">%HRR</th>
-              <th class="num">Avg W</th>
-              <th class="num">NP</th>
-              <th class="num">TSS</th>
-              <th class="num">IF</th>
-              <th class="num">Cad</th>
-              <th>Zones</th>
-            </tr>
-          </thead>
-          <tbody id="sessions-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Indoor/Outdoor Delta -->
-  <div class="panel" id="p-delta">
-    <div class="panel-header"><h2>Indoor / Outdoor Delta</h2></div>
+  <!-- Recent Sessions -->
+  <div class="panel" id="p-sessions">
+    <div class="panel-header"><h2>Recent Sessions</h2></div>
     <div class="panel-body" style="padding:0;">
-      <div class="delta-grid" id="delta-grid"></div>
+      <table class="sessions-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Sport</th>
+            <th>Env</th>
+            <th>Duration</th>
+            <th class="num">Dist km</th>
+            <th class="num">Elev m</th>
+            <th class="num">Avg HR</th>
+            <th class="num">%HRR</th>
+            <th class="num">Avg W</th>
+            <th class="num">NP</th>
+            <th class="num">TSS</th>
+            <th class="num">IF</th>
+            <th class="num">Cad</th>
+            <th>Zones</th>
+          </tr>
+        </thead>
+        <tbody id="sessions-tbody"></tbody>
+      </table>
     </div>
   </div>
 </main>
@@ -366,63 +194,64 @@ function n(v, dec=0) {
 }
 
 function sportEmoji(type) {
-  if (type && type.includes('run'))  return '🏃';
-  if (type && (type.includes('swim'))) return '🏊';
+  if (type && type.includes('run')) return '🏃';
+  if (type && type.includes('swim')) return '🏊';
   return '🚲';
 }
+
 function envEmoji(type, isIndoor) {
-  if (type && type.includes('run')) return isIndoor ? '🏠' : '🌳';
   return isIndoor ? '🏠' : '🌳';
 }
 
 function zoneBars(zones) {
   if (!zones || !Object.keys(zones).length) return '';
   const keys = ['Z1 Recovery','Z2 Endurance','Z3 Tempo','Z4 Threshold','Z5 VO2max'];
-  const cls   = ['z1','z2','z3','z4','z5'];
+  const cls  = ['z1','z2','z3','z4','z5'];
   let html = '<div class="zone-bar">';
   keys.forEach((k, i) => {
     const pct = zones[k] || 0;
-    if (pct > 0)
-      html += `<div class="zone-seg ${cls[i]}" style="width:${pct}%" title="${k}: ${pct}%"></div>`;
+    if (pct > 0) html += `<div class="zone-seg ${cls[i]}" style="width:${pct}%" title="${k}: ${pct}%"></div>`;
   });
   return html + '</div>';
 }
 
 async function init() {
-  const res  = await fetch(DATA_URL);
-  const data = await res.json();
+  const data = await fetch(DATA_URL).then(r => r.json());
 
   // Summary strip
   const s = data.summary;
   const tsb = s.current_tsb;
-  document.getElementById('s-ctl').textContent   = s.current_ctl?.toFixed(1) ?? '—';
-  document.getElementById('s-atl').textContent   = s.current_atl?.toFixed(1) ?? '—';
+  document.getElementById('s-ctl').textContent = s.current_ctl?.toFixed(1) ?? '—';
+  document.getElementById('s-atl').textContent = s.current_atl?.toFixed(1) ?? '—';
   const tsbEl = document.getElementById('s-tsb');
   tsbEl.textContent = tsb != null ? (tsb > 0 ? '+' : '') + tsb.toFixed(1) : '—';
-  tsbEl.className   = 'value ' + (tsb >= 0 ? 'pos' : 'neg');
+  tsbEl.className = 'value ' + (tsb >= 0 ? 'pos' : 'neg');
   document.getElementById('s-total').textContent = s.total_sessions;
   document.getElementById('s-split').textContent = `${s.cycling_sessions} cycling / ${s.running_sessions} running`;
-  document.getElementById('s-from').textContent  = s.date_range?.from ?? '—';
-  document.getElementById('s-to').textContent    = '→ ' + (s.date_range?.to ?? '—');
-  document.getElementById('s-gen').textContent   = data.generated?.slice(0,10) ?? '—';
+  document.getElementById('s-from').textContent = s.date_range?.from ?? '—';
+  document.getElementById('s-to').textContent = '→ ' + (s.date_range?.to ?? '—');
+  document.getElementById('s-gen').textContent = data.generated?.slice(0,10) ?? '—';
+  document.getElementById('summary-strip').classList.add('visible');
+
+  // Generated time + diagnostic
   const genEl = document.getElementById('generated-time');
   genEl.textContent = 'built ' + (data.generated ?? '') + ' · click to copy diagnostic';
   genEl.addEventListener('click', () => {
     const diag = {
-      generated      : data.generated,
-      sessions       : data.summary?.total_sessions,
-      cycling        : data.summary?.cycling_sessions,
-      running        : data.summary?.running_sessions,
-      current_ctl    : data.summary?.current_ctl,
-      current_atl    : data.summary?.current_atl,
-      current_tsb    : data.summary?.current_tsb,
-      date_range     : data.summary?.date_range,
-      pmc_rows       : data.pmc_chart?.length,
-      cei_points     : data.cei_series?.length,
-      running_cloud  : Object.keys(data.running_cloud?.series || {}).join(', ') || "missing",
-      cycling_cloud  : Object.keys(data.cycling_cloud?.series || {}).join(', '),
-      user_agent     : navigator.userAgent,
-      url            : window.location.href,
+      generated     : data.generated,
+      sessions      : data.summary?.total_sessions,
+      cycling       : data.summary?.cycling_sessions,
+      running       : data.summary?.running_sessions,
+      current_ctl   : data.summary?.current_ctl,
+      current_atl   : data.summary?.current_atl,
+      current_tsb   : data.summary?.current_tsb,
+      date_range    : data.summary?.date_range,
+      pmc_rows      : data.pmc_chart?.length,
+      cei_points    : data.cei_series?.length,
+      running_cloud : Object.keys(data.running_cloud?.series || {}).join(', ') || 'missing',
+      cycling_cloud : Object.keys(data.cycling_cloud?.series || {}).join(', ') || 'missing',
+      user_agent    : navigator.userAgent,
+      url           : window.location.href,
     };
     navigator.clipboard.writeText(JSON.stringify(diag, null, 2)).then(() => {
       const toast = document.getElementById('diag-toast');
@@ -430,15 +259,10 @@ async function init() {
       setTimeout(() => toast.classList.remove('show'), 2500);
     });
   });
-  document.getElementById('summary-strip').classList.add('visible');
 
   // PMC Chart
-  const pmc    = data.pmc_chart.filter(r => r.tss != null);
-  const labels = pmc.map(r => r.date);
-  buildPMC(labels, pmc);
-
-  // CEI Chart
-  buildCEI(data.cei_series);
+  const pmc = data.pmc_chart.filter(r => r.stss != null);
+  buildPMC(pmc.map(r => r.date), pmc);
 
   // Sessions table
   const tbody = document.getElementById('sessions-tbody');
@@ -461,27 +285,9 @@ async function init() {
     </tr>`;
   });
 
-  // Indoor/outdoor delta
-  const delta = data.indoor_outdoor_delta;
-  const dg    = document.getElementById('delta-grid');
-  ['indoor','outdoor'].forEach(ctx => {
-    const d   = delta[ctx];
-    const col = ctx === 'indoor' ? 'var(--indoor)' : 'var(--outdoor)';
-    dg.innerHTML += `<div class="delta-cell">
-      <div class="context" style="color:${col}">${ctx}</div>
-      <div class="delta-row"><span class="dk">Sessions</span><span class="dv">${d.n}</span></div>
-      <div class="delta-row"><span class="dk">Avg Power</span><span class="dv">${d.avg_power_w != null ? d.avg_power_w + ' W' : '—'}</span></div>
-      <div class="delta-row"><span class="dk">Avg NP</span><span class="dv">${d.avg_np_w != null ? d.avg_np_w + ' W' : '—'}</span></div>
-      <div class="delta-row"><span class="dk">Avg HR</span><span class="dv">${d.avg_hr_bpm != null ? d.avg_hr_bpm + ' bpm' : '—'}</span></div>
-      <div class="delta-row"><span class="dk">Avg CEI</span><span class="dv">${d.avg_cei != null ? (1/d.avg_cei).toFixed(2) + ' W/bpm' : '—'}</span></div>
-    </div>`;
-  });
-
-  // Reveal panels with stagger
-  document.querySelectorAll('.panel').forEach((el, i) => {
-    setTimeout(() => el.classList.add('visible'), 100 + i * 80);
-  });
-
+  // Reveal panels
+  document.querySelectorAll('.panel').forEach((el, i) =>
+    setTimeout(() => el.classList.add('visible'), 100 + i * 80));
   document.getElementById('loading').classList.add('hidden');
 }
 
@@ -497,35 +303,26 @@ function buildPMC(labels, pmc) {
           data: pmc.map(r => r.ctl),
           borderColor: '#e8f020',
           backgroundColor: 'rgba(232,240,32,0.06)',
-          borderWidth: 2,
-          pointRadius: 0,
-          tension: 0.3,
-          fill: true,
+          borderWidth: 2, pointRadius: 0, tension: 0.3, fill: true,
         },
         {
           label: 'ATL (Fatigue)',
           data: pmc.map(r => r.atl),
           borderColor: '#ff6b35',
           backgroundColor: 'rgba(255,107,53,0.06)',
-          borderWidth: 2,
-          pointRadius: 0,
-          tension: 0.3,
-          fill: true,
+          borderWidth: 2, pointRadius: 0, tension: 0.3, fill: true,
         },
         {
           label: 'TSB (Form)',
           data: pmc.map(r => r.tsb),
           borderColor: '#34d399',
           backgroundColor: 'transparent',
-          borderWidth: 1.5,
-          borderDash: [4, 3],
-          pointRadius: 0,
-          tension: 0.3,
+          borderWidth: 1.5, borderDash: [4,3], pointRadius: 0, tension: 0.3,
           yAxisID: 'y2',
         },
         {
           label: 'TSS',
-          data: pmc.map(r => r.tss),
+          data: pmc.map(r => r.stss),
           borderColor: 'transparent',
           backgroundColor: 'rgba(255,255,255,0.08)',
           borderWidth: 0,
@@ -544,89 +341,21 @@ function buildPMC(labels, pmc) {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: {
-          labels: { color: '#6b7580', font: { family: 'DM Mono', size: 11 }, boxWidth: 20 }
-        },
+        legend: { labels: { color: '#6b7580', font: { family: 'DM Mono', size: 11 }, boxWidth: 20 } },
         tooltip: {
-          backgroundColor: '#111418',
-          borderColor: '#1e2329',
-          borderWidth: 1,
-          titleColor: '#c8d0d8',
-          bodyColor: '#6b7580',
+          backgroundColor: '#111418', borderColor: '#1e2329', borderWidth: 1,
+          titleColor: '#c8d0d8', bodyColor: '#6b7580',
           titleFont: { family: 'Barlow Condensed', size: 13, weight: '600' },
           bodyFont: { family: 'DM Mono', size: 11 },
         }
       },
       scales: {
-        x: { ticks: { color: '#3a4149', font: { size: 10 }, maxTicksLimit: 12 },
-             grid: { color: '#1e2329' } },
-        y: { ticks: { color: '#6b7580', font: { size: 10 } },
-             grid: { color: '#1e2329' },
+        x: { ticks: { color: '#3a4149', font: { size: 10 }, maxTicksLimit: 12 }, grid: { color: '#1e2329' } },
+        y: { ticks: { color: '#6b7580', font: { size: 10 } }, grid: { color: '#1e2329' },
              title: { display: true, text: 'CTL / ATL', color: '#3a4149', font: { size: 10 } } },
-        y2: { position: 'right',
-              ticks: { color: '#34d399', font: { size: 10 } },
-              grid: { display: false },
+        y2: { position: 'right', ticks: { color: '#34d399', font: { size: 10 } }, grid: { display: false },
               title: { display: true, text: 'TSB', color: '#34d399', font: { size: 10 } } },
         y3: { display: false, max: 300 },
-      }
-    }
-  });
-}
-
-function buildCEI(series) {
-  const ctx = document.getElementById('chart-cei').getContext('2d');
-  const indoor  = series.filter(s => s.is_indoor);
-  const outdoor = series.filter(s => !s.is_indoor);
-
-  new Chart(ctx, {
-    type: 'scatter',
-    data: {
-      datasets: [
-        {
-          label: 'Indoor (W/bpm)',
-          data: indoor.map(s => ({ x: s.date, y: s.cei_inv, power: s.avg_power_w, hr: s.avg_hr_bpm })),
-          backgroundColor: 'rgba(96,165,250,0.7)',
-          pointRadius: 5,
-          pointHoverRadius: 7,
-        },
-        {
-          label: 'Outdoor (W/bpm)',
-          data: outdoor.map(s => ({ x: s.date, y: s.cei_inv, power: s.avg_power_w, hr: s.avg_hr_bpm })),
-          backgroundColor: 'rgba(167,139,250,0.8)',
-          pointRadius: 6,
-          pointHoverRadius: 8,
-        },
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          labels: { color: '#6b7580', font: { family: 'DM Mono', size: 11 }, boxWidth: 12 }
-        },
-        tooltip: {
-          backgroundColor: '#111418',
-          borderColor: '#1e2329',
-          borderWidth: 1,
-          titleColor: '#c8d0d8',
-          bodyColor: '#6b7580',
-          titleFont: { family: 'Barlow Condensed', size: 13 },
-          bodyFont: { family: 'DM Mono', size: 11 },
-          callbacks: {
-            label: ctx => {
-              const d = ctx.raw;
-              return `${d.y.toFixed(2)} W/bpm  |  ${d.power}W  ${d.hr}bpm`;
-            }
-          }
-        }
-      },
-      scales: {
-        x: { type: 'category',
-             ticks: { color: '#3a4149', font: { size: 10 }, maxTicksLimit: 10 },
-             grid: { color: '#1e2329' } },
-        y: { ticks: { color: '#6b7580', font: { size: 10 } },
-             grid: { color: '#1e2329' },
-             title: { display: true, text: 'W / bpm (higher = better)', color: '#6b7580', font: { size: 10 } } }
       }
     }
   });
