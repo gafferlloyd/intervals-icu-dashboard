@@ -41,23 +41,70 @@ def build_dashboard_data() -> dict:
 
     print(f"Loaded {len(sessions)} sessions.")
 
-    # ── PMC (all sessions, chronological) ────────────────────────────────────
-    pmc_rows = training_load_summary(sessions)
+    # ── PMC — from intervals.icu (daily, accurate) ───────────────────────────
+    icu_file = _Path("icu_data.json")
+    icu_pmc  = []
+    icu_summary = {}
 
-    # Attach date to each PMC row
-    pmc_chart = []
+    if icu_file.exists():
+        icu_raw  = _json.loads(icu_file.read_text())
+        wellness = icu_raw.get("wellness", [])
+        # Build daily PMC chart from intervals.icu wellness data
+        for w in wellness:
+            ctl = w.get("ctl") or 0
+            atl = w.get("atl") or 0
+            icu_pmc.append({
+                "date"     : w["id"],
+                "ctl"      : round(ctl, 1),
+                "atl"      : round(atl, 1),
+                "tsb"      : round(ctl - atl, 1),
+                "rampRate" : round(w.get("rampRate") or 0, 2),
+                "load"     : w.get("ctlLoad"),
+            })
+        if wellness:
+            last = wellness[-1]
+            ctl  = last.get("ctl") or 0
+            atl  = last.get("atl") or 0
+            icu_summary = {
+                "ctl"      : round(ctl, 1),
+                "atl"      : round(atl, 1),
+                "tsb"      : round(ctl - atl, 1),
+                "rampRate" : round(last.get("rampRate") or 0, 2),
+                "as_of"    : last["id"],
+            }
+        print(f"  ICU PMC: {len(icu_pmc)} daily records, "
+              f"CTL={icu_summary.get('ctl')} ATL={icu_summary.get('atl')} "
+              f"TSB={icu_summary.get('tsb')}")
+
+    # Also keep our session-level TSS for bar chart overlay
+    pmc_rows = training_load_summary(sessions)
+    session_tss = []
     for s, pmc in zip(sessions, pmc_rows):
         date = date_from_filename(s.get("file", ""))
-        pmc_chart.append({
-            "date"  : date,
-            "tss"   : pmc["tss"],
-            "rtss"  : pmc["rtss"],
-            "stss"  : pmc["stss"],
-            "ctl"   : pmc["ctl"],
-            "atl"   : pmc["atl"],
-            "tsb"   : pmc["tsb"],
-            "type"  : s.get("activity_type", ""),
-        })
+        stss = pmc.get("stss")
+        if stss:
+            session_tss.append({
+                "date" : date,
+                "stss" : stss,
+                "type" : s.get("activity_type", ""),
+            })
+
+    # Use ICU PMC if available, fall back to our own
+    if icu_pmc:
+        pmc_chart = icu_pmc
+    else:
+        pmc_rows_old = training_load_summary(sessions)
+        pmc_chart = []
+        for s, pmc in zip(sessions, pmc_rows_old):
+            date = date_from_filename(s.get("file", ""))
+            pmc_chart.append({
+                "date"  : date,
+                "ctl"   : pmc["ctl"],
+                "atl"   : pmc["atl"],
+                "tsb"   : pmc["tsb"],
+                "stss"  : pmc.get("stss"),
+                "type"  : s.get("activity_type", ""),
+            })
 
     # ── CEI trend (cycling with power, min power filter) ─────────────────────
     cei_series = []
@@ -107,7 +154,6 @@ def build_dashboard_data() -> dict:
     delta = indoor_outdoor_delta(sessions)
 
     # ── Summary stats ─────────────────────────────────────────────────────────
-    latest_pmc   = pmc_chart[-1] if pmc_chart else {}
     cycling_sess = [s for s in sessions if "cycl" in s.get("activity_type","") or "bik" in s.get("activity_type","")]
     running_sess = [s for s in sessions if "run"  in s.get("activity_type","")]
 
@@ -135,9 +181,10 @@ def build_dashboard_data() -> dict:
         "total_sessions"   : len(sessions),
         "cycling_sessions" : len(cycling_sess),
         "running_sessions" : len(running_sess),
-        "current_ctl"      : latest_pmc.get("ctl"),
-        "current_atl"      : latest_pmc.get("atl"),
-        "current_tsb"      : latest_pmc.get("tsb"),
+        "current_ctl"      : icu_summary.get("ctl") if icu_summary else (pmc_chart[-1].get("ctl") if pmc_chart else None),
+        "current_atl"      : icu_summary.get("atl") if icu_summary else (pmc_chart[-1].get("atl") if pmc_chart else None),
+        "current_tsb"      : icu_summary.get("tsb") if icu_summary else (pmc_chart[-1].get("tsb") if pmc_chart else None),
+        "ramp_rate"        : icu_summary.get("rampRate") if icu_summary else None,
         "date_range"       : {
             "from": date_from_filename(sessions[0].get("file", "")),
             "to"  : date_from_filename(sessions[-1].get("file", "")),
@@ -196,6 +243,8 @@ def build_dashboard_data() -> dict:
         "generated"     : __import__("datetime").datetime.now().strftime("%Y-%m-%d %H:%M"),
         "summary"       : summary,
         "pmc_chart"     : pmc_chart,
+        "session_tss"   : session_tss,
+        "icu_summary"   : icu_summary,
         "cei_series"    : cei_series,
         "recent_sessions": recent,
         "indoor_outdoor_delta": delta,

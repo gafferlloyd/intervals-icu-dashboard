@@ -47,7 +47,7 @@
   main { padding: 24px 32px; display: grid; gap: 24px; }
 
   /* Summary strip */
-  .summary-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .summary-strip { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
   .stat-cell { background: var(--surface); padding: 16px 20px; display: flex; flex-direction: column; gap: 4px; }
   .stat-cell .label { font-family: var(--font-head); font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); }
   .stat-cell .value { font-family: var(--font-head); font-size: 32px; font-weight: 700; color: #fff; line-height: 1; }
@@ -126,6 +126,11 @@
       <div class="label">Form (TSB)</div>
       <div class="value" id="s-tsb">—</div>
       <div class="sub">CTL − ATL</div>
+    </div>
+    <div class="stat-cell">
+      <div class="label">Ramp Rate</div>
+      <div class="value" id="s-ramp" style="font-size:24px">—</div>
+      <div class="sub">CTL/week</div>
     </div>
     <div class="stat-cell">
       <div class="label">Sessions</div>
@@ -251,6 +256,12 @@ async function init() {
   document.getElementById('s-from').textContent = s.date_range?.from ?? '—';
   document.getElementById('s-to').textContent = '→ ' + (s.date_range?.to ?? '—');
   document.getElementById('s-gen').textContent = data.generated?.slice(0,10) ?? '—';
+  const ramp = data.summary?.ramp_rate;
+  const rampEl = document.getElementById('s-ramp');
+  if (ramp != null) {
+    rampEl.textContent = (ramp > 0 ? '+' : '') + ramp.toFixed(1);
+    rampEl.style.color = ramp > 5 ? 'var(--tsb-neg)' : ramp > 0 ? 'var(--accent)' : 'var(--tsb-pos)';
+  }
   document.getElementById('summary-strip').classList.add('visible');
 
   // Generated time + diagnostic
@@ -280,9 +291,10 @@ async function init() {
     });
   });
 
-  // PMC Chart
-  const pmc = data.pmc_chart.filter(r => r.stss != null);
-  buildPMC(pmc.map(r => r.date), pmc);
+  // PMC Chart — daily ICU data + session TSS bars
+  const pmc      = data.pmc_chart || [];
+  const sessTSS  = data.session_tss || [];
+  buildPMC(pmc, sessTSS);
 
   // Sessions table
   const tbody = document.getElementById('sessions-tbody');
@@ -326,6 +338,19 @@ async function init() {
   const distByYearFull = {};
   years.forEach(y => distByYearFull[y] = 0);
 
+  // Aggregate session_tss by year
+  const tssFromSessions = {};
+  years.forEach(y => tssFromSessions[y] = 0);
+  (data.session_tss || []).forEach(r => {
+    const y = r.date?.slice(0,4);
+    if (years.includes(y)) tssFromSessions[y] = (tssFromSessions[y]||0) + (r.stss||0);
+  });
+
+  // Days elapsed in 2026 for annualisation
+  const now = new Date();
+  const jan1 = new Date(now.getFullYear(), 0, 1);
+  const daysElapsed = Math.max(1, Math.round((now - jan1) / 86400000));
+
   const statsRows = [
     {
       label: 'Calories (kcal)',
@@ -335,12 +360,12 @@ async function init() {
     {
       label: 'Sessions',
       vals: years.map(y => sessionsByYear[y] || '—'),
-      ann: Math.round((sessionsByYear['2026']||0) / 75 * 365) || '—',
+      ann: Math.round((sessionsByYear['2026']||0) / daysElapsed * 365) || '—',
     },
     {
       label: 'Total TSS',
-      vals: years.map(y => tssbyYear[y] ? Math.round(tssbyYear[y]).toLocaleString() : '—'),
-      ann: tssbyYear['2026'] ? Math.round(tssbyYear['2026'] / 75 * 365).toLocaleString() : '—',
+      vals: years.map(y => tssFromSessions[y] ? Math.round(tssFromSessions[y]).toLocaleString() : '—'),
+      ann: tssFromSessions['2026'] ? Math.round(tssFromSessions['2026'] / daysElapsed * 365).toLocaleString() : '—',
     },
   ];
 
@@ -356,8 +381,24 @@ async function init() {
   document.getElementById('loading').classList.add('hidden');
 }
 
-function buildPMC(labels, pmc) {
+function buildPMC(pmc, sessTSS) {
   const ctx = document.getElementById('chart-pmc').getContext('2d');
+
+  // TSS bars — map by date for quick lookup
+  const tssMap = {};
+  sessTSS.forEach(r => {
+    if (!tssMap[r.date]) tssMap[r.date] = {stss: 0, type: r.type};
+    tssMap[r.date].stss += r.stss || 0;
+    tssMap[r.date].type  = r.type;
+  });
+
+  const labels  = pmc.map(r => r.date);
+  const tssData = labels.map(d => tssMap[d]?.stss || null);
+  const tssCols = labels.map(d => {
+    const t = tssMap[d]?.type || '';
+    return t.includes('run') ? '#fb923c' : t.includes('indoor') ? '#60a5fa' : '#a78bfa';
+  });
+
   new Chart(ctx, {
     type: 'line',
     data: {
@@ -386,16 +427,12 @@ function buildPMC(labels, pmc) {
           yAxisID: 'y2',
         },
         {
-          label: 'TSS',
-          data: pmc.map(r => r.stss),
+          label: 'Daily Load',
+          data: tssData,
           borderColor: 'transparent',
-          backgroundColor: 'rgba(255,255,255,0.08)',
+          backgroundColor: tssCols,
           borderWidth: 0,
-          pointRadius: 3,
-          pointBackgroundColor: pmc.map(r =>
-            r.type && r.type.includes('run') ? '#fb923c' :
-            r.type === 'indoor_cycling' ? '#60a5fa' : '#a78bfa'
-          ),
+          pointRadius: 0,
           type: 'bar',
           yAxisID: 'y3',
           order: 10,

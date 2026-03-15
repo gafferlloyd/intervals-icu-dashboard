@@ -32,10 +32,16 @@ jobs:
           GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
         run: python3 garmin_download.py
 
+      - name: Fetch intervals.icu data
+        env:
+          ICU_API_KEY:    ${{ secrets.ICU_API_KEY }}
+          ICU_ATHLETE_ID: ${{ secrets.ICU_ATHLETE_ID }}
+        run: python3 fetch_icu_data.py
+
       - name: Rebuild all data
         run: |
           chmod +x rebuild_all.sh
-          ./rebuild_all.sh
+          ./rebuild_all.sh --from 1
 
       - name: Commit and push if data changed
         run: |
