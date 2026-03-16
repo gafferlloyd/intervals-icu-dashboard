@@ -336,3 +336,16 @@
 ──────────────────────────────────────────────────────────
 ./run_on_startup.sh: line 8: ./rebuild_all.sh: Permission denied
 === Done Mo 16. Mär 21:22:59 CET 2026 ===
+=== Startup rebuild Mo 16. Mär 21:31:14 CET 2026 ===
+21:31:14  INFO     Fetching activity list 2026-02-02 → 2026-03-16 …
+21:31:14  INFO     Found 113 activities.
+21:31:14  INFO     112 cycling/running activities.
+21:31:14  INFO     0 new activities to download.
+
+───────────────────────────────────────────────────────
+  Downloaded : 0  (0 cycling / 0 running)
+  Failed     : 0
+  Skipped    : 0 (parse errors)
+───────────────────────────────────────────────────────
+./run_on_startup.sh: line 8: ./rebuild_all.sh: Permission denied
+=== Done Mo 16. Mär 21:31:14 CET 2026 ===

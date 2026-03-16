@@ -4,6 +4,6 @@ sleep 60   # wait for network
 cd "/home/gareth/PycharmProjects/pull_garmin_fitfiles"
 source "/home/gareth/PycharmProjects/pull_garmin_fitfiles/.venv/bin/activate"
 echo "=== Startup rebuild $(date) ===" >> "/home/gareth/PycharmProjects/pull_garmin_fitfiles/cron.log"
-python3 garmin_download.py >> "/home/gareth/PycharmProjects/pull_garmin_fitfiles/cron.log" 2>&1
+python3 icu_download.py >> "/home/gareth/PycharmProjects/pull_garmin_fitfiles/cron.log" 2>&1
 ./rebuild_all.sh --push >> "/home/gareth/PycharmProjects/pull_garmin_fitfiles/cron.log" 2>&1
 echo "=== Done $(date) ===" >> "/home/gareth/PycharmProjects/pull_garmin_fitfiles/cron.log"
