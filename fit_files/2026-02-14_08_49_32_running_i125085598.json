@@ -1,0 +1,31 @@
+{
+  "file": "2026-02-14_08_49_32_running_i125085598.fit",
+  "activity_type": "Run",
+  "is_indoor": false,
+  "duration": "1h 48m 10s",
+  "duration_s": 6490,
+  "distance_km": 12.15,
+  "elevation_m": 102,
+  "calories_kcal": null,
+  "heart_rate": {
+    "avg_bpm": 118,
+    "max_bpm": 140,
+    "min_bpm": 66,
+    "avg_hrr_pct": 57.7
+  },
+  "hr_zones_pct": {
+    "Z1 Recovery": 34.6,
+    "Z2 Endurance": 62.1,
+    "Z3 Tempo": 3.3,
+    "Z4 Threshold": 0.0,
+    "Z5 VO2max": 0.0
+  },
+  "cadence": {
+    "avg_rpm": 86,
+    "max_rpm": 94
+  },
+  "avg_pace": "5:34 /km",
+  "max_pace": "3:07 /km",
+  "avg_speed_kph": 10.7,
+  "icu_activity_id": "i125085598"
+}

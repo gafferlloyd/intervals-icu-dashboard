@@ -25,15 +25,15 @@ jobs:
           python-version: '3.12'
 
       - name: Install dependencies
-        run: pip install garminconnect python-dotenv fitparse numpy requests
+        run: pip install python-dotenv numpy requests fitparse
 
-      - name: Download new Garmin activities
+      - name: Download new .fit files from intervals.icu
         env:
-          GARMIN_EMAIL:    ${{ secrets.GARMIN_EMAIL }}
-          GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
-        run: python3 garmin_download.py
+          ICU_API_KEY:    ${{ secrets.ICU_API_KEY }}
+          ICU_ATHLETE_ID: ${{ secrets.ICU_ATHLETE_ID }}
+        run: python3 icu_download.py
 
-      - name: Fetch intervals.icu data
+      - name: Fetch intervals.icu analytics
         env:
           ICU_API_KEY:    ${{ secrets.ICU_API_KEY }}
           ICU_ATHLETE_ID: ${{ secrets.ICU_ATHLETE_ID }}

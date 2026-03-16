@@ -1,12 +1,12 @@
 {
-  "file": "2026-03-13_17-19-26_running_22161817431.fit",
-  "activity_type": "running",
+  "file": "2026-03-13_17_19_26_running_i131767743.fit",
+  "activity_type": "Run",
   "is_indoor": false,
   "duration": "46m 11s",
   "duration_s": 2771,
   "distance_km": 7.18,
-  "elevation_m": 8,
-  "calories_kcal": 484,
+  "elevation_m": 68,
+  "calories_kcal": null,
   "heart_rate": {
     "avg_bpm": 110,
     "max_bpm": 122,
@@ -21,15 +21,11 @@
     "Z5 VO2max": 0.0
   },
   "cadence": {
-    "avg_rpm": 84,
+    "avg_rpm": 83,
     "max_rpm": 87
   },
   "avg_pace": "6:26 /km",
   "max_pace": "5:10 /km",
   "avg_speed_kph": 9.3,
-  "running_biomechanics": {
-    "avg_vertical_osc_mm": 84.9,
-    "avg_stance_time_ms": 274.6,
-    "avg_step_length_mm": 927
-  }
+  "icu_activity_id": "i131767743"
 }

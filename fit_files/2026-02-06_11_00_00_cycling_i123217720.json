@@ -1,0 +1,31 @@
+{
+  "file": "2026-02-06_11_00_00_cycling_i123217720.fit",
+  "activity_type": "VirtualRide",
+  "is_indoor": true,
+  "duration": "36m 54s",
+  "duration_s": 2214,
+  "distance_km": 22.31,
+  "elevation_m": 3,
+  "calories_kcal": null,
+  "heart_rate": {
+    "avg_bpm": 129,
+    "max_bpm": 166,
+    "min_bpm": 93,
+    "avg_hrr_pct": 66.2
+  },
+  "hr_zones_pct": {
+    "Z1 Recovery": 6.9,
+    "Z2 Endurance": 68.1,
+    "Z3 Tempo": 22.5,
+    "Z4 Threshold": 1.6,
+    "Z5 VO2max": 0.9
+  },
+  "cadence": {
+    "avg_rpm": 64,
+    "max_rpm": 93
+  },
+  "avg_pace": "1:39 /km",
+  "max_pace": "1:09 /km",
+  "avg_speed_kph": 36.3,
+  "icu_activity_id": "i123217720"
+}

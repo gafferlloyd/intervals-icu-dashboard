@@ -1,12 +1,12 @@
 {
-  "file": "2026-03-13_13-56-15_running_22159734857.fit",
-  "activity_type": "running",
+  "file": "2026-03-13_13_56_15_running_i131723222.fit",
+  "activity_type": "Run",
   "is_indoor": false,
-  "duration": "40m 12s",
-  "duration_s": 2412,
+  "duration": "40m 13s",
+  "duration_s": 2413,
   "distance_km": 7.26,
-  "elevation_m": 9,
-  "calories_kcal": 488,
+  "elevation_m": 76,
+  "calories_kcal": null,
   "heart_rate": {
     "avg_bpm": 119,
     "max_bpm": 129,
@@ -27,9 +27,5 @@
   "avg_pace": "5:31 /km",
   "max_pace": "5:01 /km",
   "avg_speed_kph": 10.9,
-  "running_biomechanics": {
-    "avg_vertical_osc_mm": 90.1,
-    "avg_stance_time_ms": 261.8,
-    "avg_step_length_mm": 1064
-  }
+  "icu_activity_id": "i131723222"
 }

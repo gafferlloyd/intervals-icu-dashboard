@@ -116,12 +116,12 @@
           <div class="chart-wrap-sm"><canvas id="chart-out-short"></canvas></div>
         </div>
         <div class="curve-pane">
-          <h3>🌳 Outdoor — Long (2min – 2hr)</h3>
-          <div class="chart-wrap-sm"><canvas id="chart-out-long"></canvas></div>
-        </div>
-        <div class="curve-pane">
           <h3>🏠 Indoor — Short (1s – 2min)</h3>
           <div class="chart-wrap-sm"><canvas id="chart-in-short"></canvas></div>
+        </div>
+        <div class="curve-pane">
+          <h3>🌳 Outdoor — Long (2min – 2hr)</h3>
+          <div class="chart-wrap-sm"><canvas id="chart-out-long"></canvas></div>
         </div>
         <div class="curve-pane">
           <h3>🏠 Indoor — Long (2min – 2hr)</h3>
@@ -359,52 +359,76 @@ function buildGradTable(cloudSeries, hrrMarkers){
   table.innerHTML=thead+tbody;
 }
 
-// ── MMP Power Curves — 4 charts ───────────────────────────────────────────────
+// ── MMP Power Curves — 4 charts with shared y-axis per row ──────────────────
 function buildCurveCharts(mmpCurves){
-  const SHORT_MAX = 120;   // 2 min
+  const SHORT_MAX = 120;
   const LONG_MIN  = 120;
-  const LONG_MAX  = 7200;  // 2 hr
+  const LONG_MAX  = 7200;
 
   const configs = [
-    {id:'chart-out-short', context:'outdoor', xMin:1,        xMax:SHORT_MAX, key:'outShort'},
-    {id:'chart-out-long',  context:'outdoor', xMin:LONG_MIN, xMax:LONG_MAX,  key:'outLong'},
-    {id:'chart-in-short',  context:'indoor',  xMin:1,        xMax:SHORT_MAX, key:'inShort'},
-    {id:'chart-in-long',   context:'indoor',  xMin:LONG_MIN, xMax:LONG_MAX,  key:'inLong'},
+    {id:'chart-out-short', context:'outdoor', xMin:1,        xMax:SHORT_MAX, key:'outShort', row:'short'},
+    {id:'chart-in-short',  context:'indoor',  xMin:1,        xMax:SHORT_MAX, key:'inShort',  row:'short'},
+    {id:'chart-out-long',  context:'outdoor', xMin:LONG_MIN, xMax:LONG_MAX,  key:'outLong',  row:'long'},
+    {id:'chart-in-long',   context:'indoor',  xMin:LONG_MIN, xMax:LONG_MAX,  key:'inLong',   row:'long'},
   ];
 
+  // Pre-compute all datasets so we can find shared y bounds per row
+  const allDatasets = {};
   configs.forEach(cfg=>{
-    const ctx = document.getElementById(cfg.id).getContext('2d');
-    const ds  = [];
-
+    const ds = [];
     YEARS.forEach(year=>{
       const sk = year==='recent' ? `${cfg.context}_recent` : `${cfg.context}_${year}`;
       const curves = mmpCurves[sk]?.list;
       if(!curves?.length) return;
-
       const curve = curves[0];
-      const secs  = curve.secs  || [];
+      const secs  = curve.secs || [];
       const wkg   = curve.watts_per_kg || [];
       if(!wkg.length) return;
-
-      // Filter to this chart's x range
       const pts = secs
         .map((s,i)=>({x:s, y:wkg[i]}))
         .filter(p=>p.x>=cfg.xMin && p.x<=cfg.xMax && p.y>0);
       if(!pts.length) return;
-
       const col = YEAR_COLS[year]||'#aaa';
-      const lbl = year==='recent'?'Recent 42d':year;
       ds.push({
-        label:lbl, seriesKey:year,
-        data:pts,
-        borderColor:col, backgroundColor:'transparent',
+        label: year==='recent'?'Recent 42d':year, seriesKey:year,
+        data:pts, borderColor:col, backgroundColor:'transparent',
         borderWidth:2, pointRadius:0, showLine:true, tension:0.1, order:2,
       });
     });
+    allDatasets[cfg.key] = ds;
+  });
 
+  // Compute shared y bounds per row (short pair and long pair)
+  const yBounds = {short:{min:Infinity,max:-Infinity}, long:{min:Infinity,max:-Infinity}};
+  configs.forEach(cfg=>{
+    allDatasets[cfg.key].forEach(ds=>{
+      ds.data.forEach(p=>{
+        if(p.y < yBounds[cfg.row].min) yBounds[cfg.row].min = p.y;
+        if(p.y > yBounds[cfg.row].max) yBounds[cfg.row].max = p.y;
+      });
+    });
+  });
+  // Round to nice values
+  Object.keys(yBounds).forEach(row=>{
+    const b = yBounds[row];
+    if(b.min===Infinity) return;
+    b.min = Math.floor(b.min * 10) / 10 - 0.1;
+    b.max = Math.ceil(b.max  * 10) / 10 + 0.1;
+  });
+
+  configs.forEach(cfg=>{
+    const ctx = document.getElementById(cfg.id).getContext('2d');
+    const b   = yBounds[cfg.row];
+    const opts = curveOptions(cfg.xMin, cfg.xMax);
+    // Apply shared y bounds
+    if(b.min !== Infinity){
+      opts.scales.y.min = b.min;
+      opts.scales.y.max = b.max;
+    }
     curveCharts[cfg.key] = new Chart(ctx,{
-      type:'scatter', data:{datasets:ds},
-      options: curveOptions(cfg.xMin, cfg.xMax),
+      type:'scatter',
+      data:{datasets: allDatasets[cfg.key]},
+      options: opts,
     });
   });
 }
