@@ -1,13 +1,13 @@
 {
-  "generated": "2026-03-15 08:36",
+  "generated": "2026-03-16 21:04",
   "summary": {
     "total_sessions": 2394,
     "cycling_sessions": 1383,
     "running_sessions": 1009,
-    "current_ctl": 80.6,
-    "current_atl": 66.6,
-    "current_tsb": 14.0,
-    "ramp_rate": -1.66,
+    "current_ctl": 80.5,
+    "current_atl": 76.4,
+    "current_tsb": 4.1,
+    "ramp_rate": -1.1,
     "date_range": {
       "from": "2023-01-01",
       "to": "2026-03-13"
@@ -19,7 +19,7 @@
         "2025": 431272,
         "2026": 75772
       },
-      "annualised_42d": 362775
+      "annualised_42d": 349600
     }
   },
   "pmc_chart": [
@@ -9217,171 +9217,179 @@
     },
     {
       "date": "2026-02-23",
-      "ctl": 85.4,
-      "atl": 94.3,
-      "tsb": -8.8,
-      "rampRate": 0.9,
-      "load": 180.0
+      "ctl": 84.3,
+      "atl": 87.6,
+      "tsb": -3.3,
+      "rampRate": -0.27,
+      "load": 130.0
     },
     {
       "date": "2026-02-24",
-      "ctl": 84.8,
-      "atl": 89.7,
-      "tsb": -4.9,
-      "rampRate": 0.48,
+      "ctl": 83.7,
+      "atl": 83.9,
+      "tsb": -0.2,
+      "rampRate": -0.67,
       "load": 60.0
     },
     {
       "date": "2026-02-25",
-      "ctl": 86.2,
-      "atl": 96.7,
-      "tsb": -10.5,
-      "rampRate": 0.71,
-      "load": 142.0
+      "ctl": 84.2,
+      "atl": 86.9,
+      "tsb": -2.6,
+      "rampRate": -1.26,
+      "load": 106.0
     },
     {
       "date": "2026-02-26",
-      "ctl": 85.8,
-      "atl": 93.1,
-      "tsb": -7.3,
-      "rampRate": 2.34,
+      "ctl": 83.9,
+      "atl": 84.6,
+      "tsb": -0.7,
+      "rampRate": 0.41,
       "load": 70.0
     },
     {
       "date": "2026-02-27",
-      "ctl": 85.5,
-      "atl": 90.2,
-      "tsb": -4.7,
-      "rampRate": 2.4,
+      "ctl": 83.6,
+      "atl": 82.8,
+      "tsb": 0.8,
+      "rampRate": 0.52,
       "load": 71.0
     },
     {
       "date": "2026-02-28",
-      "ctl": 84.8,
-      "atl": 86.0,
-      "tsb": -1.2,
-      "rampRate": 2.27,
+      "ctl": 83.0,
+      "atl": 79.6,
+      "tsb": 3.4,
+      "rampRate": 0.44,
       "load": 59.0
     },
     {
       "date": "2026-03-01",
-      "ctl": 85.2,
-      "atl": 88.1,
-      "tsb": -2.9,
-      "rampRate": 2.08,
+      "ctl": 83.4,
+      "atl": 82.6,
+      "tsb": 0.8,
+      "rampRate": 0.29,
       "load": 102.0
     },
     {
       "date": "2026-03-02",
-      "ctl": 84.5,
-      "atl": 83.9,
-      "tsb": 0.7,
-      "rampRate": -0.89,
+      "ctl": 82.8,
+      "atl": 79.1,
+      "tsb": 3.7,
+      "rampRate": -1.46,
       "load": 56.0
     },
     {
       "date": "2026-03-03",
-      "ctl": 84.3,
-      "atl": 82.3,
-      "tsb": 2.0,
-      "rampRate": -0.59,
+      "ctl": 82.5,
+      "atl": 78.1,
+      "tsb": 4.4,
+      "rampRate": -1.14,
       "load": 72.0
     },
     {
       "date": "2026-03-04",
-      "ctl": 85.5,
-      "atl": 89.8,
-      "tsb": -4.3,
-      "rampRate": -0.64,
+      "ctl": 83.9,
+      "atl": 86.2,
+      "tsb": -2.4,
+      "rampRate": -0.34,
       "load": 139.0
     },
     {
       "date": "2026-03-05",
-      "ctl": 83.7,
-      "atl": 79.1,
-      "tsb": 4.7,
-      "rampRate": -2.06,
+      "ctl": 82.1,
+      "atl": 76.0,
+      "tsb": 6.2,
+      "rampRate": -1.77,
       "load": 9.0
     },
     {
       "date": "2026-03-06",
-      "ctl": 83.8,
-      "atl": 80.0,
-      "tsb": 3.8,
-      "rampRate": -1.66,
+      "ctl": 82.2,
+      "atl": 77.3,
+      "tsb": 4.9,
+      "rampRate": -1.37,
       "load": 86.0
     },
     {
       "date": "2026-03-07",
-      "ctl": 83.1,
-      "atl": 76.8,
-      "tsb": 6.3,
-      "rampRate": -1.69,
+      "ctl": 81.6,
+      "atl": 74.5,
+      "tsb": 7.1,
+      "rampRate": -1.41,
       "load": 56.0
     },
     {
       "date": "2026-03-08",
-      "ctl": 82.2,
-      "atl": 72.4,
-      "tsb": 9.8,
-      "rampRate": -3.02,
+      "ctl": 80.7,
+      "atl": 70.4,
+      "tsb": 10.3,
+      "rampRate": -2.74,
       "load": 44.0
     },
     {
       "date": "2026-03-09",
-      "ctl": 84.4,
-      "atl": 86.1,
-      "tsb": -1.7,
-      "rampRate": -0.15,
-      "load": 175.0
+      "ctl": 81.6,
+      "atl": 77.0,
+      "tsb": 4.6,
+      "rampRate": -1.17,
+      "load": 120.0
     },
     {
       "date": "2026-03-10",
-      "ctl": 84.1,
-      "atl": 84.3,
-      "tsb": -0.2,
-      "rampRate": -0.12,
+      "ctl": 81.4,
+      "atl": 76.5,
+      "tsb": 5.0,
+      "rampRate": -1.12,
       "load": 73.0
     },
     {
       "date": "2026-03-11",
-      "ctl": 83.9,
-      "atl": 83.1,
-      "tsb": 0.8,
-      "rampRate": -1.62,
+      "ctl": 81.3,
+      "atl": 76.3,
+      "tsb": 5.0,
+      "rampRate": -2.6,
       "load": 75.0
     },
     {
       "date": "2026-03-12",
-      "ctl": 82.2,
-      "atl": 73.5,
-      "tsb": 8.7,
-      "rampRate": -1.54,
+      "ctl": 79.6,
+      "atl": 67.6,
+      "tsb": 12.0,
+      "rampRate": -2.49,
       "load": 11.0
     },
     {
       "date": "2026-03-13",
-      "ctl": 83.1,
-      "atl": 79.7,
-      "tsb": 3.4,
-      "rampRate": -0.7,
+      "ctl": 80.6,
+      "atl": 74.6,
+      "tsb": 6.0,
+      "rampRate": -1.63,
       "load": 120.0
     },
     {
       "date": "2026-03-14",
-      "ctl": 82.5,
-      "atl": 76.8,
-      "tsb": 5.7,
-      "rampRate": -0.64,
+      "ctl": 80.0,
+      "atl": 72.4,
+      "tsb": 7.7,
+      "rampRate": -1.55,
       "load": 58.0
     },
     {
       "date": "2026-03-15",
-      "ctl": 80.6,
-      "atl": 66.6,
-      "tsb": 14.0,
-      "rampRate": -1.66,
-      "load": 0.0
+      "ctl": 81.1,
+      "atl": 79.2,
+      "tsb": 1.8,
+      "rampRate": 0.37,
+      "load": 124.0
+    },
+    {
+      "date": "2026-03-16",
+      "ctl": 80.5,
+      "atl": 76.4,
+      "tsb": 4.1,
+      "rampRate": -1.1,
+      "load": 58.0
     }
   ],
   "session_tss": [
@@ -15987,11 +15995,11 @@
     }
   ],
   "icu_summary": {
-    "ctl": 80.6,
-    "atl": 66.6,
-    "tsb": 14.0,
-    "rampRate": -1.66,
-    "as_of": "2026-03-15"
+    "ctl": 80.5,
+    "atl": 76.4,
+    "tsb": 4.1,
+    "rampRate": -1.1,
+    "as_of": "2026-03-16"
   },
   "cei_series": [
     {
