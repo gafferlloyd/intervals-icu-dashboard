@@ -89,8 +89,12 @@ def parse_fit(filepath: str | Path, activity_type: str) -> dict:
     activity_type : 'cycling', 'indoor_cycling', 'road_biking', or 'running'
     """
     filepath = Path(filepath)
-    is_cycling = activity_type in ("cycling", "indoor_cycling", "road_biking")
-    is_indoor  = activity_type == "indoor_cycling"
+    _atype    = (activity_type or "").lower()
+    CYCLING_TYPES = {"cycling", "indoor_cycling", "road_biking", "ride", "virtualride",
+                     "gravelride", "mountainbikeride", "ebikeride", "indoorcycling"}
+    INDOOR_TYPES  = {"indoor_cycling", "virtualride", "indoorcycling", "virtual_ride"}
+    is_cycling = _atype in CYCLING_TYPES
+    is_indoor  = _atype in INDOOR_TYPES
     ftp        = FTP_INDOOR if is_indoor else FTP_OUTDOOR
 
     # Garmin's ORIGINAL download wraps the .fit in a zip — handle both cases
@@ -192,7 +196,10 @@ def parse_fit(filepath: str | Path, activity_type: str) -> dict:
     # Session summary — more reliable than accumulating from records
     for session in fitfile.get_messages("session"):
         data = {f.name: f.value for f in session}
-        if data.get("total_elapsed_time"):
+        # Prefer moving time (timer time) over elapsed time
+        if data.get("total_timer_time"):
+            duration_s     = data["total_timer_time"]
+        elif data.get("total_elapsed_time"):
             duration_s     = data["total_elapsed_time"]
         if data.get("total_distance"):
             total_distance = data["total_distance"]

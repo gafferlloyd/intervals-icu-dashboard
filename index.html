@@ -219,8 +219,9 @@ function n(v, dec=0) {
 }
 
 function sportEmoji(type) {
-  if (type && type.includes('run')) return '🏃';
-  if (type && type.includes('swim')) return '🏊';
+  const t = (type || '').toLowerCase();
+  if (t.includes('run')) return '🏃';
+  if (t.includes('swim')) return '🏊';
   return '🚲';
 }
 
