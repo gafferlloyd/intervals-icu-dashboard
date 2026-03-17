@@ -26,5 +26,7 @@
   },
   "avg_pace": "5:29 /km",
   "max_pace": "2:46 /km",
-  "avg_speed_kph": 10.9
+  "avg_speed_kph": 10.9,
+  "tss": 34.2,
+  "intensity_factor": 0.728
 }

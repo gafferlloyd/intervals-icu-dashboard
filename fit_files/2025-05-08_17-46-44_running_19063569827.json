@@ -27,6 +27,8 @@
   "avg_pace": "6:26 /km",
   "max_pace": "4:30 /km",
   "avg_speed_kph": 9.3,
+  "tss": 21.2,
+  "intensity_factor": 0.62,
   "running_biomechanics": {
     "avg_vertical_osc_mm": 83.0,
     "avg_stance_time_ms": 273.5,

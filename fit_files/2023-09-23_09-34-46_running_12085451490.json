@@ -2,8 +2,8 @@
   "file": "2023-09-23_09-34-46_running_12085451490.fit",
   "activity_type": "running",
   "is_indoor": false,
-  "duration": "29m 03s",
-  "duration_s": 1744,
+  "duration": "27m 56s",
+  "duration_s": 1677,
   "distance_km": 4.81,
   "elevation_m": 108,
   "calories_kcal": 326,
@@ -26,5 +26,7 @@
   },
   "avg_pace": "5:46 /km",
   "max_pace": "5:18 /km",
-  "avg_speed_kph": 10.4
+  "avg_speed_kph": 10.4,
+  "tss": 22.3,
+  "intensity_factor": 0.692
 }

@@ -25,6 +25,5 @@
     "max_rpm": null
   },
   "avg_speed_kph": 10.9,
-  "max_speed_kph": 20.0,
-  "icu_activity_id": "i123431328"
+  "max_speed_kph": 20.0
 }

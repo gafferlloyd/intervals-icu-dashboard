@@ -33,6 +33,7 @@ import fitparse
 from athlete_config import (
     HR_REST, HR_MAX, HRR, HRR_ZONE_UPPER_PCT, ZONE_LABELS,
     FTP_INDOOR, FTP_OUTDOOR, NP_WINDOW, WEIGHT_KG,
+    THRESHOLD_PACE_MPS,
     hrr_zone as _hrr_zone,
 )
 
@@ -273,8 +274,6 @@ def parse_fit(filepath: str | Path, activity_type: str) -> dict:
     # IF_run = NGP / threshold_pace  (normalised graded pace vs threshold)
     running_metrics = {}
     if not is_cycling and avg_spd > 0 and duration_s > 0:
-        from athlete_config import THRESHOLD_PACE_MPS, THRESHOLD_HR, HR_REST, HRR
-        # Use HR-based intensity if no pace threshold available
         # rIF = avg_pace / threshold_pace (as speed ratio)
         r_if = avg_spd / THRESHOLD_PACE_MPS if THRESHOLD_PACE_MPS > 0 else None
         if r_if is not None:

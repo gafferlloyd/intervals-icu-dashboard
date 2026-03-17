@@ -2,8 +2,8 @@
   "file": "2023-07-11_09-45-49_cycling_11537647722.fit",
   "activity_type": "gravel_cycling",
   "is_indoor": false,
-  "duration": "7h 35m 00s",
-  "duration_s": 27300,
+  "duration": "6h 40m 21s",
+  "duration_s": 24021,
   "distance_km": 90.59,
   "elevation_m": 1049,
   "calories_kcal": 2074,
@@ -26,5 +26,7 @@
   },
   "avg_pace": "4:25 /km",
   "max_pace": "1:24 /km",
-  "avg_speed_kph": 13.6
+  "avg_speed_kph": 13.6,
+  "tss": 546.6,
+  "intensity_factor": 0.905
 }

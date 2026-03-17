@@ -1,7 +1,7 @@
 {
   "file": "2026-01-24_18-30-18_cycling_21652948607.fit",
   "activity_type": "virtual_ride",
-  "is_indoor": false,
+  "is_indoor": true,
   "duration": "1h 02m 24s",
   "duration_s": 3744,
   "distance_km": 30.42,
@@ -26,5 +26,7 @@
   },
   "avg_pace": "2:03 /km",
   "max_pace": "0:47 /km",
-  "avg_speed_kph": 29.2
+  "avg_speed_kph": 29.2,
+  "tss": 395.0,
+  "intensity_factor": 1.949
 }

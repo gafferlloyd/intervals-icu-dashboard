@@ -27,5 +27,6 @@
   "avg_pace": "5:46 /km",
   "max_pace": "5:08 /km",
   "avg_speed_kph": 10.4,
-  "icu_activity_id": "i129504295"
+  "tss": 33.5,
+  "intensity_factor": 0.692
 }

@@ -1,7 +1,7 @@
 {
   "file": "2026-02-12_14_00_00_cycling_i125008837.fit",
   "activity_type": "Ride",
-  "is_indoor": true,
+  "is_indoor": false,
   "duration": "25m 00s",
   "duration_s": 1500,
   "distance_km": 7.5,
@@ -19,6 +19,5 @@
     "max_rpm": null
   },
   "avg_speed_kph": 18.0,
-  "max_speed_kph": 0.0,
-  "icu_activity_id": "i125008837"
+  "max_speed_kph": 0.0
 }
