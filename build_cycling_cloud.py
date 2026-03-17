@@ -270,6 +270,11 @@ def build_cycling_cloud() -> None:
 
         is_recent = date_str >= cutoff_str
 
+        # Defensive: ensure raw_buckets exists (handles any edge case)
+        for s_key in [sk, "recent"]:
+            if s_key in series and "raw_buckets" not in series[s_key]:
+                series[s_key]["raw_buckets"] = {}
+
         for pwr, hr in windows:
             idx = bucket_index(pwr)
             if idx is None:
