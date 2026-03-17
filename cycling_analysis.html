@@ -323,10 +323,14 @@ function buildGradTable(cloudSeries, hrrMarkers){
   const HRR_ROW  = {'50':'50% HRR','60':'60% HRR','70':'70% HRR',
                     '80':'80% HRR','90':'90% HRR','vt1':'VT1','threshold':'Threshold'};
   const groups = [
-    {label:'2023', keys:['outdoor_2023','indoor_2023']},
-    {label:'2024', keys:['outdoor_2024','indoor_2024']},
-    {label:'2025', keys:['outdoor_2025','indoor_2025']},
-    {label:'2026', keys:['outdoor_2026','indoor_2026']},
+    {label:'2023', keys:['outdoor_2023']},
+    {label:'2024', keys:['outdoor_2024']},
+    {label:'2025', keys:['outdoor_2025']},
+    {label:'2026', keys:['outdoor_2026']},
+    {label:'2023', keys:['indoor_2023']},
+    {label:'2024', keys:['indoor_2024']},
+    {label:'2025', keys:['indoor_2025']},
+    {label:'2026', keys:['indoor_2026']},
     {label:'Recent', keys:['recent']},
   ];
 
