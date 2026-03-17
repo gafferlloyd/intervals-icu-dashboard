@@ -167,15 +167,16 @@ def build_dashboard_data() -> dict:
             cal_by_year[year] += kcal
 
     # Annualised from last 42 days
+    cutoff = (
+        __import__("datetime").datetime.now() -
+        __import__("datetime").timedelta(days=42)
+    ).strftime("%Y-%m-%d")
     recent_kcal = sum(
         s.get("calories_kcal", 0) or 0
         for s in sessions
-        if s.get("file", "")[:10] >= (
-            __import__("datetime").datetime.now() -
-            __import__("datetime").timedelta(days=42)
-        ).strftime("%Y-%m-%d")
+        if s.get("file", "")[:10] >= cutoff
     )
-    annualised_kcal = round(recent_kcal / 42 * 365)
+    annualised_kcal = round(recent_kcal / 42 * 365) if recent_kcal > 0 else 0
 
     summary = {
         "total_sessions"   : len(sessions),

@@ -103,6 +103,10 @@
   <a href="running_analysis.html">🏃 Running</a>
   <span class="sep">·</span>
   <a href="cycling_analysis.html">🚲 Cycling</a>
+  <span style="margin-left:auto;color:var(--muted);font-size:10px;font-family:var(--font-head);letter-spacing:.08em">
+    Data: <a href="https://intervals.icu" target="_blank" style="color:var(--dim);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--dim)'">intervals.icu</a>
+    &nbsp;·&nbsp; Built with <a href="https://claude.ai" target="_blank" style="color:var(--dim);text-decoration:none" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--dim)'">claude.ai</a>
+  </span>
 </nav>
 
 <header>
@@ -396,8 +400,8 @@ function buildPMC(pmc, sessTSS) {
   const labels  = pmc.map(r => r.date);
   const tssData = labels.map(d => tssMap[d]?.stss || null);
   const tssCols = labels.map(d => {
-    const t = tssMap[d]?.type || '';
-    return t.includes('run') ? '#fb923c' : t.includes('indoor') ? '#60a5fa' : '#a78bfa';
+    const t = (tssMap[d]?.type || '').toLowerCase();
+    return t.includes('run') ? '#fb923c' : (t.includes('virtual') || t.includes('indoor')) ? '#60a5fa' : '#a78bfa';
   });
 
   new Chart(ctx, {
@@ -444,7 +448,20 @@ function buildPMC(pmc, sessTSS) {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { labels: { color: '#6b7580', font: { family: 'DM Mono', size: 11 }, boxWidth: 20 } },
+        legend: { labels: {
+          color: '#6b7580', font: { family: 'DM Mono', size: 11 }, boxWidth: 20,
+          generateLabels: chart => {
+            const defaults = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+            // Replace the single-colour 'Daily Load' entry with 3 coloured entries
+            const filtered = defaults.filter(l => l.text !== 'Daily Load');
+            filtered.push(
+              { text: '🚴 Outdoor load', fillStyle: '#a78bfa', strokeStyle: '#a78bfa', lineWidth: 0, hidden: false, datasetIndex: 3 },
+              { text: '🏠 Indoor load',  fillStyle: '#60a5fa', strokeStyle: '#60a5fa', lineWidth: 0, hidden: false, datasetIndex: 3 },
+              { text: '🏃 Running load', fillStyle: '#fb923c', strokeStyle: '#fb923c', lineWidth: 0, hidden: false, datasetIndex: 3 },
+            );
+            return filtered;
+          }
+        }},
         tooltip: {
           backgroundColor: '#111418', borderColor: '#1e2329', borderWidth: 1,
           titleColor: '#c8d0d8', bodyColor: '#6b7580',

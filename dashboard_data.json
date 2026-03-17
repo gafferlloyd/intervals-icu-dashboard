@@ -1,5 +1,5 @@
 {
-  "generated": "2026-03-16 22:02",
+  "generated": "2026-03-17 08:09",
   "summary": {
     "total_sessions": 2404,
     "cycling_sessions": 1321,
@@ -9395,42 +9395,42 @@
   "session_tss": [
     {
       "date": "2023-01-01",
-      "stss": 124.1,
+      "stss": 123.8,
       "type": "running"
     },
     {
       "date": "2023-01-02",
-      "stss": 37.5,
+      "stss": 37.4,
       "type": "running"
     },
     {
       "date": "2023-01-03",
-      "stss": 80.3,
+      "stss": 62.6,
       "type": "running"
     },
     {
       "date": "2023-01-04",
-      "stss": 41.9,
+      "stss": 41.1,
       "type": "running"
     },
     {
       "date": "2023-01-09",
-      "stss": 64.1,
+      "stss": 62.4,
       "type": "running"
     },
     {
       "date": "2023-01-10",
-      "stss": 63.0,
+      "stss": 61.8,
       "type": "running"
     },
     {
       "date": "2023-01-11",
-      "stss": 55.0,
+      "stss": 55.1,
       "type": "running"
     },
     {
       "date": "2023-01-12",
-      "stss": 96.0,
+      "stss": 96.1,
       "type": "running"
     },
     {
@@ -9440,67 +9440,67 @@
     },
     {
       "date": "2023-01-14",
-      "stss": 81.1,
+      "stss": 77.4,
       "type": "running"
     },
     {
       "date": "2023-01-15",
-      "stss": 146.3,
+      "stss": 144.1,
       "type": "running"
     },
     {
       "date": "2023-01-16",
-      "stss": 49.3,
+      "stss": 49.6,
       "type": "running"
     },
     {
       "date": "2023-01-17",
-      "stss": 96.3,
+      "stss": 95.8,
       "type": "running"
     },
     {
       "date": "2023-01-18",
-      "stss": 62.5,
+      "stss": 62.9,
       "type": "running"
     },
     {
       "date": "2023-01-19",
-      "stss": 118.1,
+      "stss": 112.8,
       "type": "running"
     },
     {
       "date": "2023-01-21",
-      "stss": 103.9,
+      "stss": 98.7,
       "type": "running"
     },
     {
       "date": "2023-01-22",
-      "stss": 41.0,
+      "stss": 33.7,
       "type": "running"
     },
     {
       "date": "2023-01-22",
-      "stss": 112.7,
+      "stss": 111.3,
       "type": "running"
     },
     {
       "date": "2023-01-23",
-      "stss": 39.5,
+      "stss": 39.7,
       "type": "running"
     },
     {
       "date": "2023-01-24",
-      "stss": 74.7,
+      "stss": 74.8,
       "type": "running"
     },
     {
       "date": "2023-01-25",
-      "stss": 50.5,
+      "stss": 50.2,
       "type": "running"
     },
     {
       "date": "2023-01-27",
-      "stss": 105.2,
+      "stss": 104.8,
       "type": "running"
     },
     {

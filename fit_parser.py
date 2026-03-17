@@ -268,6 +268,22 @@ def parse_fit(filepath: str | Path, activity_type: str) -> dict:
             "np_per_kg"    : round(np / WEIGHT_KG, 2),
         }
 
+    # Running TSS (rTSS) — using pace-based intensity
+    # rTSS = (duration_s × NGP × IF_run) / (threshold_pace × 3600) × 100
+    # IF_run = NGP / threshold_pace  (normalised graded pace vs threshold)
+    running_metrics = {}
+    if not is_cycling and avg_spd > 0 and duration_s > 0:
+        from athlete_config import THRESHOLD_PACE_MPS, THRESHOLD_HR, HR_REST, HRR
+        # Use HR-based intensity if no pace threshold available
+        # rIF = avg_pace / threshold_pace (as speed ratio)
+        r_if = avg_spd / THRESHOLD_PACE_MPS if THRESHOLD_PACE_MPS > 0 else None
+        if r_if is not None:
+            r_tss = (duration_s * avg_spd * r_if) / (THRESHOLD_PACE_MPS * 3600) * 100
+            running_metrics = {
+                "tss"              : round(r_tss, 1),
+                "intensity_factor" : round(r_if, 3),
+            }
+
     # Speed / pace formatting
     speed_metrics: dict = {}
     if is_cycling:
@@ -305,6 +321,7 @@ def parse_fit(filepath: str | Path, activity_type: str) -> dict:
         },
         **speed_metrics,
         **power_metrics,
+        **running_metrics,
     }
 
     # Running biomechanics (only populated for running activities)

@@ -16,7 +16,7 @@ from pathlib import Path
 from fit_parser import parse_fit
 
 FIT_DIR      = Path("fit_files")
-CHECK_FIELDS = ["calories_kcal"]   # fields to check — reparse if any are missing
+CHECK_FIELDS = ["calories_kcal", "tss"]   # fields to check — reparse if any are missing
 
 
 def needs_reparse(json_path: Path) -> bool:
