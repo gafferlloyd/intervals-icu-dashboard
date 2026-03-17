@@ -1,5 +1,5 @@
 {
-  "generated": "2026-03-17 20:13",
+  "generated": "2026-03-17 23:33",
   "summary": {
     "total_sessions": 2408,
     "cycling_sessions": 1321,
@@ -40713,7 +40713,7 @@
       "vt1": 116.0,
       "threshold": 156.0
     },
-    "last_updated": "2026-03-17 20:13"
+    "last_updated": "2026-03-17 23:33"
   },
   "cycling_cloud": {
     "series": {
@@ -50706,7 +50706,7 @@
       "vt1": 116,
       "threshold": 156
     },
-    "last_updated": "2026-03-17 20:13"
+    "last_updated": "2026-03-17 23:33"
   },
   "cycling_curve": {
     "series": {
@@ -53814,7 +53814,7 @@
       "2026-03-17_17_49_51_cycling_i132787869.fit",
       "2026-03-17_18_51_46_cycling_i132806592.fit"
     ],
-    "last_updated": "2026-03-17 20:13"
+    "last_updated": "2026-03-17 23:33"
   },
   "running_bests": {
     "series": {
@@ -55135,6 +55135,6 @@
       "2026-03-14_08_48_30_running_i131887042.fit",
       "2026-03-15_13_49_55_running_i132206668.fit"
     ],
-    "last_updated": "2026-03-17 20:13"
+    "last_updated": "2026-03-17 23:33"
   }
 }
