@@ -213,11 +213,22 @@ def build_cycling_cloud() -> None:
 
     print(f"Found {len(new_files)} new cycling .fit files to process.")
 
-    series = cloud.get("series", {})
+    # Load raw series (has raw_buckets) if available, else start fresh
+    series = cloud.get("_raw_series", {})
+    if not series:
+        # Fall back to rebuilding from scratch — old format had no _raw_series
+        series = {}
 
     # Ensure recent series exists
     if "recent" not in series:
         series["recent"] = {"raw_buckets": {}, "recent_points": []}
+
+    # Ensure all existing series have raw_buckets key
+    for sk in series:
+        if "raw_buckets" not in series[sk]:
+            series[sk]["raw_buckets"] = {}
+        if "recent_points" not in series[sk]:
+            series[sk]["recent_points"] = []
 
     for fit_path in new_files:
         name      = fit_path.name

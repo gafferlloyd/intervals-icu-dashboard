@@ -1,5 +1,5 @@
 {
-  "generated": "2026-03-17 12:38",
+  "generated": "2026-03-17 20:30",
   "summary": {
     "total_sessions": 2404,
     "cycling_sessions": 1321,
@@ -40919,7 +40919,7 @@
       "vt1": 116,
       "threshold": 156
     },
-    "last_updated": "2026-03-17 12:38"
+    "last_updated": "2026-03-17 20:29"
   },
   "cycling_curve": {
     "series": {
