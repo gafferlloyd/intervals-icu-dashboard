@@ -1,5 +1,5 @@
 {
-  "generated": "2026-04-21 23:34",
+  "generated": "2026-04-22 23:44",
   "athlete_id": "i128043",
   "wellness": [
     {
@@ -9657,6 +9657,14 @@
       "rampRate": -7.3604317,
       "ctlLoad": 31.0,
       "atlLoad": 31.0
+    },
+    {
+      "id": "2026-04-22",
+      "ctl": 58.50597,
+      "atl": 22.33891,
+      "rampRate": -7.0225563,
+      "ctlLoad": 14.0,
+      "atlLoad": 14.0
     }
   ],
   "power_hr_curves": {
@@ -10539,7 +10547,7 @@
     "2026": {
       "athleteId": "i128043",
       "start": "2026-01-01",
-      "end": "2026-04-21",
+      "end": "2026-04-22",
       "minWatts": 0,
       "maxWatts": 495,
       "bucketSize": 5,
@@ -10852,8 +10860,8 @@
     },
     "recent": {
       "athleteId": "i128043",
-      "start": "2026-03-10",
-      "end": "2026-04-21",
+      "start": "2026-03-11",
+      "end": "2026-04-22",
       "minWatts": 0,
       "maxWatts": 420,
       "bucketSize": 5,
@@ -10908,11 +10916,11 @@
         111,
         115,
         113,
-        110,
-        107,
         109,
+        106,
+        108,
         107,
-        109,
+        108,
         112,
         113,
         116,
@@ -10927,16 +10935,16 @@
         126,
         133,
         135,
-        134,
+        133,
         136,
         135,
-        133,
+        135,
         134,
         137,
         137,
         136,
-        139,
-        141,
+        137,
+        140,
         0,
         139,
         145,
@@ -10991,27 +10999,27 @@
         69,
         68,
         71,
+        74,
         75,
-        76,
         79,
         81,
         81,
         82,
-        83,
         82,
         82,
         81,
-        82,
-        82,
         81,
+        82,
+        82,
+        80,
         79,
         84,
         78,
         78,
-        83,
+        85,
         77,
         84,
-        79,
+        78,
         77,
         85,
         85,
@@ -11025,8 +11033,8 @@
         87,
         0,
         86,
-        88,
-        83,
+        89,
+        77,
         87
       ],
       "minutes": [
@@ -11077,47 +11085,47 @@
         40,
         49,
         41,
-        50,
-        55,
-        64,
-        56,
-        73,
-        85,
-        87,
-        72,
-        58,
+        45,
+        49,
+        61,
+        48,
+        66,
+        71,
+        82,
+        68,
         53,
-        32,
-        25,
-        27,
+        48,
+        30,
+        24,
+        24,
         16,
         15,
-        12,
+        11,
         7,
-        5,
+        4,
         2,
         7,
-        13,
+        11,
         10,
-        6,
+        5,
         11,
         12,
-        5,
+        3,
         4,
         6,
         3,
         2,
-        3,
-        4,
+        2,
+        2,
         0,
         2,
-        3,
-        2,
+        1,
+        1,
         1
       ],
       "lthr": 157,
       "max_hr": 173,
-      "ftp": 297
+      "ftp": 294
     }
   },
   "mmp_curves": {
@@ -18593,7 +18601,7 @@
     "indoor_2026": {
       "list": [
         {
-          "id": "r.2026-01-01.2026-04-21-f1",
+          "id": "r.2026-01-01.2026-04-22-f1",
           "after_kj": 0,
           "filters": [
             {
@@ -18604,11 +18612,11 @@
               "not": false
             }
           ],
-          "label": "1-Jan 21-Apr-2026",
+          "label": "1-Jan 22-Apr-2026",
           "filter_label": "Indoor / Outdoor is indoor",
           "start_date_local": "2026-01-01",
-          "end_date_local": "2026-04-21T23:59:59",
-          "days": 111,
+          "end_date_local": "2026-04-22T23:59:59",
+          "days": 112,
           "moving_time": 0,
           "training_load": 0,
           "weight": 68.199,
@@ -19775,7 +19783,7 @@
     "outdoor_2026": {
       "list": [
         {
-          "id": "r.2026-01-01.2026-04-21-f1",
+          "id": "r.2026-01-01.2026-04-22-f1",
           "after_kj": 0,
           "filters": [
             {
@@ -19786,11 +19794,11 @@
               "not": false
             }
           ],
-          "label": "1-Jan 21-Apr-2026",
+          "label": "1-Jan 22-Apr-2026",
           "filter_label": "Indoor / Outdoor is outdoor",
           "start_date_local": "2026-01-01",
-          "end_date_local": "2026-04-21T23:59:59",
-          "days": 111,
+          "end_date_local": "2026-04-22T23:59:59",
+          "days": 112,
           "moving_time": 0,
           "training_load": 0,
           "weight": 68.199,
@@ -21038,7 +21046,7 @@
     "indoor_recent": {
       "list": [
         {
-          "id": "r.2026-03-10.2026-04-21-f1",
+          "id": "r.2026-03-11.2026-04-22-f1",
           "after_kj": 0,
           "filters": [
             {
@@ -21049,10 +21057,10 @@
               "not": false
             }
           ],
-          "label": "10-Mar 21-Apr-2026",
+          "label": "11-Mar 22-Apr-2026",
           "filter_label": "Indoor / Outdoor is indoor",
-          "start_date_local": "2026-03-10",
-          "end_date_local": "2026-04-21T23:59:59",
+          "start_date_local": "2026-03-11",
+          "end_date_local": "2026-04-22T23:59:59",
           "days": 43,
           "moving_time": 0,
           "training_load": 0,
@@ -22191,7 +22199,7 @@
     "outdoor_recent": {
       "list": [
         {
-          "id": "r.2026-03-10.2026-04-21-f1",
+          "id": "r.2026-03-11.2026-04-22-f1",
           "after_kj": 0,
           "filters": [
             {
@@ -22202,10 +22210,10 @@
               "not": false
             }
           ],
-          "label": "10-Mar 21-Apr-2026",
+          "label": "11-Mar 22-Apr-2026",
           "filter_label": "Indoor / Outdoor is outdoor",
-          "start_date_local": "2026-03-10",
-          "end_date_local": "2026-04-21T23:59:59",
+          "start_date_local": "2026-03-11",
+          "end_date_local": "2026-04-22T23:59:59",
           "days": 43,
           "moving_time": 0,
           "training_load": 0,
@@ -23432,6 +23440,40 @@
     }
   },
   "activities": [
+    {
+      "id": "i141983192",
+      "start_date_local": "2026-04-22T13:02:19",
+      "type": "Ride",
+      "icu_training_load": 7,
+      "icu_atl": 22.33891,
+      "icu_ctl": 58.50597,
+      "name": "Munich Cycling",
+      "distance": 7493.85,
+      "moving_time": 1560,
+      "total_elevation_gain": 7.0,
+      "max_heartrate": 111,
+      "average_heartrate": 91,
+      "calories": 178,
+      "trimp": 12.202971,
+      "icu_intensity": 39.259193
+    },
+    {
+      "id": "i141932098",
+      "start_date_local": "2026-04-22T09:02:37",
+      "type": "Ride",
+      "icu_training_load": 7,
+      "icu_atl": 22.33891,
+      "icu_ctl": 58.50597,
+      "name": "Munich Cycling",
+      "distance": 7633.62,
+      "moving_time": 1367,
+      "total_elevation_gain": 8.0,
+      "max_heartrate": 110,
+      "average_heartrate": 95,
+      "calories": 162,
+      "trimp": 12.315088,
+      "icu_intensity": 42.810364
+    },
     {
       "id": "i141799686",
       "start_date_local": "2026-04-21T18:36:35",
